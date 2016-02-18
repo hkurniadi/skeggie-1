@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get '/' => 'pages#index', as: :home
+  get '/search' => 'pages#search', as: :search
+  get '/schedule' => 'users#schedule', as: :schedule
+  get '/new' => 'users#new', as: :new
+  get '/login' => 'access#login', as: :login
+  resources :users
+  root 'pages#index'
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

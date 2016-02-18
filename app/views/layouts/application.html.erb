@@ -7,7 +7,18 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+<table class = 'navbar'>
+	<tr>
+		<td><%= link_to('Home', home_path) %></td>
+    <td><%= link_to('Search', search_path) %></td>
+    <td><%= link_to('Schedule', schedule_path) %></td>
+    <td><%= link_to('Sign Up', new_path) %></td>
+    <td><%= link_to('Login', login_path) %></td>
+    
+    
+	</tr>
 
+</table>
 <%= yield %>
 
 </body>
