@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get '/' => 'pages#index', as: :home
+  get '/profile/:id' => 'users#profile', as: :profile
   get '/search' => 'pages#search', as: :search
   get '/schedule' => 'users#schedule', as: :schedule
   get '/new' => 'users#new', as: :new
