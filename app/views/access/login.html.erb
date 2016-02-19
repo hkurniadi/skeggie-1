@@ -1,3 +1,7 @@
+<% if flash[:alert] %>  
+  <div class="notice"><%= flash[:alert] %></div>
+<% end %>
+
 <%= form_for(:session, url: login_path) do |f| %>
 <p>
   <%= f.label :username, "Username: " %><br>
@@ -6,13 +10,13 @@
 
   <p>
     <%= f.label :password, "Password: " %><br>
-    <%= f.text_field :password %>
+    <%= f.password_field :password %>
   </p>
 <p>
   <%= f.submit "Login" %>
 </p>
 
 <p>
-  New User? <%= link_to('Sign Up here!', new_path) %>
+  New User? <%= link_to('Sign Up here!', signup_path) %>
 </p>
 <% end %>
