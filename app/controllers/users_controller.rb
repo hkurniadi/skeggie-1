@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
 
     if @user.update(user_params)
-        redirect_to @user
+        redirect_to action: 'profile', id: @user.id
         else
             render 'edit'
         end
@@ -29,6 +29,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      session[:user_id] = @user.id
       redirect_to action: 'profile', id: @user.id
         else
             render 'new'
@@ -46,7 +47,7 @@ class UsersController < ApplicationController
   private
   
   def user_params
-    params.require(:user).permit(:username, :first_name, :last_name, :past_courses, :address, :friend_ids, :current_courses, :password)
+    params.require(:user).permit(:username, :first_name, :last_name, :past_courses, :address, :friend_ids, :current_courses, :password, :password_confirmation, :major)
   end
   
 end
