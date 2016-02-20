@@ -2,21 +2,27 @@
   <div class="notice"><%= flash[:alert] %></div>
 <% end %>
 
-<%= form_for(:session, url: login_path) do |f| %>
-<p>
-  <%= f.label :username, "Username: " %><br>
-  <%= f.text_field :username %>
+<% if !logged_in? %>
+  <%= form_for(:session, url: login_path) do |f| %>
+  <p>
+    <%= f.label :username, "Username: " %><br>
+    <%= f.text_field :username %>
+    </p>
+
+    <p>
+      <%= f.label :password, "Password: " %><br>
+      <%= f.password_field :password %>
+    </p>
+  <p>
+    <%= f.submit "Login" %>
   </p>
 
   <p>
-    <%= f.label :password, "Password: " %><br>
-    <%= f.password_field :password %>
+    New User? <%= link_to('Sign Up here!', signup_path) %>
   </p>
-<p>
-  <%= f.submit "Login" %>
-</p>
-
-<p>
-  New User? <%= link_to('Sign Up here!', signup_path) %>
-</p>
+  <% end %>
+<% else %>
+  <script type="text/javascript">
+    window.location.href="/"  // put your correct path in a string here
+  </script>
 <% end %>
