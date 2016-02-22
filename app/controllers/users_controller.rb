@@ -31,9 +31,10 @@ class UsersController < ApplicationController
     if @user.save
       session[:user_id] = @user.id
       redirect_to action: 'profile', id: @user.id
-        else
-            render 'new'
-        end
+    else
+      flash.now[:alert] = "Username already taken, please enter a different username."
+      render 'new'
+    end
   end
   
   def schedule

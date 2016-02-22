@@ -1,3 +1,14 @@
+<% if !@user.first_name.nil? %>
+  <p><strong>Name: </strong><%= "#{@user.first_name} #{@user.last_name}"%></p>
+<% end %>
+
+<% if !@user.major.nil? %>
+  <p><strong>Major:</strong> <%= @user.major %> </p>
+<% end %>
+
 <% if current_user == @user %>
-  <p><%= link_to("Edit", edit_user_path) %> </p>
+  <p><%= link_to("Edit", edit_user_path) %></p>
+
+<% elsif logged_in? %>
+  <!-- add friend button here-->
 <% end %>

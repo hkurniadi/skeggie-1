@@ -1,7 +1,20 @@
+<% if @user.errors.any? %>
+  <div id="error_explanation">
+    <ul>
+      <% @user.errors.each do |attr, msg| %>
+        <% if @user.errors[attr].first == msg %>
+      <%="<li>#{attr.capitalize} #{msg} </li>".html_safe %>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <%= form_for @user do |f| %>
-<p>
-  <%= f.label :username, "Username: " %><br>
-  <%= f.text_field :username %>
+
+  <p>
+    <%= f.label :username, "Username: " %><br>
+    <%= f.text_field :username %>
   </p>
 
   <p>
@@ -13,7 +26,9 @@
     <%= f.label :password_confirmation, "Confirmation: " %><br>
     <%= f.password_field :password_confirmation %>
   </p>
-<p>
-  <%= f.submit %>
-</p>
+
+  <p>
+    <%= f.submit %>
+  </p>
+
 <% end %>

@@ -9,10 +9,14 @@
       <%= f.label :last_name, "Last Name: " %><br>
       <%= f.text_field :last_name %>
     </p>
+
+    <!--  Will be used to caculate travel times in scheduling system.-->
     <p>
       <%= f.label :address, "Address: " %><br>
       <%= f.text_field :address %>
     </p>
+
+    <!-- Will be used to check course history against major requirements-->
     <p>
       <%= f.label :major, "Major: " %><br>
       <%= f.text_field :major %>
@@ -23,6 +27,6 @@
   <% end %>
 <% else %>
   <script type="text/javascript">
-    window.location.href="/"  // put your correct path in a string here
+    window.location.href="/" 
   </script>
 <% end %>

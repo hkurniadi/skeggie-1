@@ -13,3 +13,20 @@
  *= require_tree .
  *= require_self
  */
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans);
+html{
+  font-family: NotoSans;
+}
+.navbar {
+  font-size: 20px;
+  border:2px solid black;
+  border-radius: 4px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-decoration: none;
+}
+
+.notice {
+  padding-top: 10px;
+  font-weight: 800;
+}
