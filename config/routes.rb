@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   get '/search' => 'pages#search', as: :search
   get '/schedule' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup
-  get '/login' => 'access#login', as: :login
+  get '/login' => 'access#login', as: :login  
   post   'login'   => 'access#attempt_login'
   delete 'logout' => 'access#logout'
   resources :users
