@@ -17,9 +17,9 @@ class UsersController < ApplicationController
 
     if @user.update(user_params)
         redirect_to action: 'profile', id: @user.id
-        else
-            render 'edit'
-        end
+    else
+        render 'edit'
+    end
   end
   
   def new

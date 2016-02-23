@@ -3,7 +3,7 @@
     <ul>
       <% @user.errors.each do |attr, msg| %>
         <% if @user.errors[attr].first == msg %>
-      <%="<li>#{attr.capitalize} #{msg} </li>".html_safe %>
+          <%="<li>#{attr.capitalize} #{msg} </li>".html_safe %>
         <% end %>
       <% end %>
     </ul>
