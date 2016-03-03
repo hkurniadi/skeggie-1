@@ -5,7 +5,10 @@ class PagesController < ApplicationController
 	end
   
 	def search
-		
+    
 	end
 
+  def course
+    
+  end
 end

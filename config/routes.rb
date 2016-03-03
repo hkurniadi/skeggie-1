@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get '/' => 'pages#index', as: :home
   get '/profile/:id' => 'users#profile', as: :profile
   get '/search' => 'pages#search', as: :search
+  get '/search/:semester/:subject' => 'pages#search'
   get '/schedule' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup
   get '/login' => 'access#login', as: :login  
