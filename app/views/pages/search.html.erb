@@ -89,6 +89,7 @@
   
 </select>
 <form onSubmit="return process();" id="searchform">
+  Course Number: <input type ="text" id = "coursenum">
   <input type="submit" value="Search">
 </form>
 
@@ -98,15 +99,36 @@
   <% @year = @cururl.split('/')[4].split('%20')[1] %>
   <% @department = @cururl.split('/')[5] %>
 <% end %>
+
+<% if @cururl.length() >=48 && @cururl[@cururl.length()-4]=='/' %>
+  <% @coursenum = @cururl.split('/')[6] %>
+<% end %>
 <% if !@department.nil? %>
-<% @response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}") %>
+  <% if @coursenum.nil? %>
+    <% @response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}") %>
+  <% else %>
+    <% @response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}") %>
+  <% end %>
+  <% if @response.kind_of?(Array) %> <!-- Checking if response is valid -->
     <table class='search_results'>
-      <% @response.each do |val| %>
-      <tr>
-        <td class = 'dep_cid'><%= "#{@department}" + " " + val["text"] %></td>
-        <td class = 'ctitle'><%= val["title"] %></td>
-      </tr>
+      <% if @coursenum.nil? %> <!-- Course ID isn't specified, all courses from semester appear -->
+        <% @response.each do |val| %>
+        <tr>
+          <td class = 'dep_cid'><%= "#{@department} " + val["text"] %></td>
+          <td class = 'course_title'><%= val["title"] %></td>
+        </tr>
+        <% end %>
+      <% else %>
+        <% @response.each do |val| %>
+        <tr>
+          <td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
+          <td class = 'course_title'><%= val["title"] %></td>
+        </tr>
+        <% end %>
       <% end %>
     </table>
+  <% else %>
+    <p id='no_results'>Sorry, there are no courses matching your query.</p>
   <% end %>
+<% end %>
 
