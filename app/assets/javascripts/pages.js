@@ -1,6 +1,8 @@
 function process()
 {
-  var url="http://localhost:3000/search/" + document.getElementById("semester").value + "/" + document.getElementById("department").value; // Will be changed when pushed to heroku
+  var getUrl = window.location;
+  var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+  var url= baseUrl + "/" + document.getElementById("semester").value + "/" + document.getElementById("department").value;
   if (document.getElementById("coursenum").value != null) {
     url += "/" + document.getElementById("coursenum").value;
   }

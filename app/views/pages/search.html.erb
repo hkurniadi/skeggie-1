@@ -1,4 +1,3 @@
-
 <form onSubmit="return process();" id="searchform">
   <label for="semester">Semester: </label>
   <select name = "semester" id = "semester" form = "searchform">
@@ -130,7 +129,7 @@
         <tr>
           <td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
           <td class = 'course_title'><%= val["title"] %></td>
-          <td class = 'course_link'><%= link_to("View", "http://localhost:3000/course/#{@cururl[29..(@cururl.length()-1)]}/#{val["text"]}" ) %></td>
+          <td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl[29..(@cururl.length()-1)]}/#{val["text"]}" ) %></td>
         </tr>
         <% end %>
       <% end %>
