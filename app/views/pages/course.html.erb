@@ -1,0 +1,248 @@
+
+<% @cururl = request.original_url %> 
+<% @urllen = @cururl.length() %>
+<% if @urllen >=44 %>
+  <% @semester = @cururl.split('/')[4].split('%20')[0] %>
+  <% @year = @cururl.split('/')[4].split('%20')[1] %>
+  <% @department = @cururl.split('/')[5] %>
+<% end %>
+
+<% if @urllen >=48 %>
+  <% @coursenum = @cururl.split('/')[6] %>
+<% end %>
+
+<% if @urllen >=52 && @cururl[@urllen - 5] == '/' %>
+  <% @coursesection = @cururl.split('/')[7] %>
+<% end %>
+
+<% @response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}/#{@coursesection}") %>
+
+<h2>Course: <%= "#{@response["info"]["name"]} #{@response["info"]["term"]}" %></h2>
+<h3>Title: <%= "#{@response["info"]["title"]}" %></h3>
+
+<% if @cururl[@urllen-2..@urllen-1] != "00" %>
+  <p>
+    <strong>This course requires that you also enroll in another course.</strong>
+    <%= link_to("Click here", "#{@cururl[0..(@urllen-3)]}00") %>
+  </p>
+<% end %>
+
+<% if @response.has_key?('instructor') %>
+  <% @response["instructor"].each do |instruct| %>
+    <% if instruct["roleCode"] == "PI" %>
+      <p>Primary Instructor: <%= instruct["name"] %></p> 
+    <% elsif insturct["roleCode"] == "SI" %>
+      <p>Secondary Instructor: <%= instruct["name"] %></p>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% @info = @response["info"] %> <!-- Will be used often for checking JSON and printing it -->
+
+<% if @info.has_key?('deliveryMethod') %>
+  <p><%= "Delivery Method: #{@info['deliveryMethod']}" %></p>
+<% end %>
+
+<% if @info.has_key?('units') %>
+  <p><%= "Units/Credits: #{@info["units"]}" %></p>
+<% end %>
+
+<% if @info.has_key?('designation') %>
+  <p>
+    <%= "WQB: " %>
+    <% if @info["designation"] != "" %>
+      <% if @info["designation"].include? '-' %>
+        <%= @info["designation"].split('-')[1] %>
+      <% else %>
+        <%= @info["designation"] %>
+      <% end %>
+    <% else %>
+      <%= "N/A" %>
+    <% end %>
+  </p>
+<% end %>
+
+<% if @response["courseSchedule"][0].has_key?('startTime') %>
+  <% case @response["courseSchedule"][0]["sectionCode"] %>
+  <% when "LEC" %>
+    <p class = "lec_time">Lecture Time + Location:</p>
+  <% when "LAB" %>
+    <p class = "lec_time">Lab Time + Location:</p>
+  <% when "TUT" %>
+    <p class = "lec_time">Tutorial Time + Location: </p>
+  <% when "SEM" %>
+    <p class = "lec_time">Seminar Time + Location: </p>
+  <% end %>
+  <% @response["courseSchedule"].each do |lecTime| %> <!-- Lectures can be in different rooms and at different times on different days -->
+    <ul>
+      <li>  
+        <%= "#{lecTime["startTime"]} - #{lecTime["endTime"]}" %> <%= "#{lecTime["days"]}" %><br>
+        <%= "#{lecTime["buildingCode"]} #{lecTime["roomNumber"]}, #{lecTime["campus"]}" %> 
+      </li>
+    </ul>
+  <% end %>
+<% end %>
+
+<% if @response.has_key?('examSchedule') %>
+  <p class = "exam_time">Exam Time + Location:</p>
+  <% @response["examSchedule"].each do |examTime| %>
+  <ul>
+    <li>
+      <% @examArr = examTime["startDate"].split(" ")[0..2] %>
+      <% @examArr.push(examTime["startDate"].split(" ")[5]) %>
+      <% @examArr.each_with_index do |examDate, index| %>
+        <% if index%2 == 0 %>
+          <%= "#{examDate}, " %>
+        <% else %>
+          <%= "#{examDate} " %>
+        <% end %>
+      <% end %> <br>
+      <%= "#{examTime["startTime"]} - #{examTime["endTime"]}" %> <br>
+      <%= "#{examTime["buildingCode"]} #{examTime["roomNumber"]}, #{examTime["campus"]}" %>
+    </li>
+  </ul>
+  <% end %>
+<% end %>
+
+<% if @info.has_key?('prerequisites') %>
+  <% if @info["prerequisites"] == "" %>
+    <p><%= "Prerequisites: N/A" %></p>
+  <% else %>
+    <p><%= "Prerequisites: #{@info["prerequisites"]}" %></p>
+  <% end %>
+<% end %>
+
+<% if @info.has_key?('corequisites') %>
+  <% if @info["corequisites"] == "" %>
+    <p><%= "Corequisites: N/A" %></p>
+  <% else %>
+    <p><%= "Corequisites: #{@info["corequisites"]}" %></p>
+  <% end %>
+<% end %>
+
+<% if @info.has_key?('notes') %>
+  <p class = "notes">
+    <%= "Notes: "%> <br><br>
+    <%= sanitize "#{@info["gradingNotes"]}" %> <br>
+    <%= sanitize "#{@info["notes"]}" %>
+  </p>
+<% end %>
+
+<% if @info.has_key?('courseDetails') %>
+  <h2>Details: </h2>
+  <p><%= sanitize "#{@info["courseDetails"]}"%></p>
+<% end %>
+
+<% if @info.has_key?('description') %>
+  <h2>Course Description: </h2>
+  <p><%= sanitize "#{@info["description"]}" %></p>
+<% end %>
+
+<% if @response.has_key?('grades') %>
+  <h2>Grading: </h2>
+  <ul>
+    <% @response["grades"].each do |grade| %>
+      <li>
+        <%= "#{grade["description"]}" %>
+        <strong><%= "#{grade["weight"]}%" %></strong>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if @info.has_key?('materials') or @response.has_key?('requiredText') or @response.has_key?('recommendedText') %>
+  <h2>Materials: </h2>
+<% end %>
+
+<% if @info.has_key?('materials') && @info["materials"] != "" %>
+  <%= sanitize "#{@info["materials"]}" %>
+<% end %>
+
+<% if @response.has_key?('requiredText') %>
+  <h3>Required Texts:</h3>
+  <ol>
+    <% @response["requiredText"].each do |textB| %>
+      <li>
+        <%= sanitize "#{textB["details"]}" %> <br>
+        <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
+          <% if textB["isbn"].include? "-" %>
+            <% @isbnArr = textB["isbn"].split('-') %>
+            <% @isbn = "" %>
+            <% @isbnArr.each do |num| %>
+              <% @isbn += num %>
+            <% end %>
+          <% else %>
+            <% @isbn = textB["isbn"] %>
+          <% end %>
+          <%= "ISBN: #{@isbn}" %>
+          <%= link_to("Buy at AbeBooks", "http://www.abebooks.com/servlet/SearchResults?isbn=#{@isbn}&sortby=2&sts=t") %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% end %>
+
+<% if @response.has_key?('recommendedText') %>
+  <h3>Recommended Texts:</h3>
+  <ol>
+    <% @response["recommendedText"].each do |textB| %>
+      <li>
+        <%= sanitize "#{textB["details"]}" %> <br>
+        <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
+          <% if textB["isbn"].include? "-" %>
+            <% @isbnArr = textB["isbn"].split('-') %>
+            <% @isbn = "" %>
+            <% @isbnArr.each do |num| %>
+              <% @isbn += num %>
+            <% end %>
+          <% else %>
+            <% @isbn = textB["isbn"] %>
+          <% end %>
+          <%= "ISBN: #{@isbn}" %>
+          <%= link_to("Buy at AbeBooks", "http://www.abebooks.com/servlet/SearchResults?isbn=#{@isbn}&sortby=2&sts=t") %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% end %>
+
+
+<% if @coursesection[2..3] == "00" %> <!-- Section is a lecture -->
+  <% @sectionresponse = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}") %>
+  <% @hasTut = false %>
+  <% @hasLab = false %>
+  <% @sectionresponse.each do |sect| %>
+    <% if sect["text"] != @coursesection && sect["text"][0..1] == @coursesection[0..1] %>
+      <% if @hasTut == false %>
+        <% @hasTut = true %>
+        <h2>This course has other required sections. </h2>
+        <h3>One of: </h3>
+      <% end %>
+      <% @tutresponse = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}/#{sect["text"]}") %>
+      <ul>
+        <li>
+          <%= link_to("#{sect["text"]}", "#{@cururl[0..@urllen-6]}/#{sect["text"]}") %>
+          <%= "#{@tutresponse["courseSchedule"][0]["startTime"]} - #{@tutresponse["courseSchedule"][0]["endTime"]} #{@tutresponse["courseSchedule"][0]["days"]}" %>
+        </li>
+      </ul>
+    <% elsif sect["sectionCode"] == "LAB" %>
+      <% if @hasTut == false %>
+        <% if @hasLab == false %>
+          <% @hasLab == true %>
+          <h2>This course has other required sections. </h2>
+          <h3>One of: </h3>
+        <% end %>
+      <% elsif @hasLab == false %>
+        <% @hasLab == true %>
+        <h3>And one of: </h3>
+      <% end %>
+      <% @labresponse = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}/#{sect["text"]}") %>
+      <ul>
+        <li>
+          <%= link_to("#{sect["text"]}", "#{@cururl[0..@urllen-6]}/#{sect["text"]}") %>
+          <%= "#{@labresponse["courseSchedule"][0]["startTime"]} - #{@labresponse["courseSchedule"][0]["endTime"]} #{@labresponse["courseSchedule"][0]["days"]}" %>
+        </li>
+      </ul> 
+    <% end %>
+  <% end %>
+<% end %>

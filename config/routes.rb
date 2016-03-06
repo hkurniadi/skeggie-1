@@ -3,7 +3,8 @@ Rails.application.routes.draw do
   get '/profile/:id' => 'users#profile', as: :profile
   get '/search' => 'pages#search', as: :search
   get '/search/:semester/:subject' => 'pages#search'
-  get '/search/:semester/:subject/:courseid' => 'pages#search'
+  get '/search/:semester/:subject/:coursenum' => 'pages#search'
+  get '/course/:semester/:subject/:coursenum/:section' => 'pages#course'
   get '/schedule' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup
   get '/login' => 'access#login', as: :login  
