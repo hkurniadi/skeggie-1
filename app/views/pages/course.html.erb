@@ -1,16 +1,16 @@
 <% @cururl = request.original_url %> 
 <% @urllen = @cururl.length() %>
-<% if @urllen >=44 %>
+<% if @cururl.split('/').count >=5 %>
   <% @semester = @cururl.split('/')[4].split('%20')[0] %>
   <% @year = @cururl.split('/')[4].split('%20')[1] %>
   <% @department = @cururl.split('/')[5] %>
 <% end %>
 
-<% if @urllen >=48 %>
+<% if @cururl.split('/').count >=6 %>
   <% @coursenum = @cururl.split('/')[6] %>
 <% end %>
 
-<% if @urllen >=52 && @cururl[@urllen - 5] == '/' %>
+<% if @cururl.split('/').count >= 7 && @cururl[@urllen - 5] == '/' %>
   <% @coursesection = @cururl.split('/')[7] %>
 <% end %>
 

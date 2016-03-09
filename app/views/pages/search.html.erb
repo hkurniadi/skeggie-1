@@ -129,42 +129,7 @@
           <td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
           <td class = 'course_title'><%= val["title"] %></td>
           <td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
-          <% if logged_in? && current_user.past_courses.include?("#{@department} #{val["text"]}" )%>
-            <td>
-              <strong>You have already taken this course</strong>
-            </td>
-            <td>
-								<%= form_for current_user do |f| %>
-									<% current_user.past_courses.each do |p| %>
-											<% if p != "#{@department} #{val["text"]}" %>
-												 <%= f.hidden_field :past_courses, :multiple => true, :value => p %>
-											<% end %>
-									<% end %>
-									<% if current_user.past_courses.size() == 1 %> <!-- Array will now be empty -->
-										<%= f.hidden_field :past_courses, :multiple => true, :value => "" %>
-									<% end %>
-									<%= f.submit "Remove from Past Courses" %>
-								<% end %>
-						</td>
-          <% elsif logged_in? %>
-            <%= form_for current_user do |f| %>
-              <% if current_user.past_courses != [] %>
-                <% current_user.past_courses.each_with_index do |p,i| %>
-                  <% if i==0 %>
-                    <%= f.hidden_field :past_courses, :multiple => true, :value => "#{@department} #{val["text"]}" %>
-                  <% end %>
-									<% if current_user.past_courses != [""] %>
-                  	<%= f.hidden_field :past_courses, :multiple => true, :value => p %>
-									<% end %>
-                <% end %>
-              <% else %>
-                <%= f.hidden_field :past_courses, :multiple => true, :value => "#{@department} #{val["text"]}" %>
-              <% end %>
-                <td>
-                  <%= f.submit 'Add to Past Courses' %>
-                </td>
-            <% end %>
-          <% end %>
+					<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
         </tr>
         <% end %>
       <% else %>
@@ -172,43 +137,8 @@
         <tr>
           <td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
           <td class = 'course_title'><%= val["title"] %></td>
-          <td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl[29..(@cururl.length()-1)]}/#{val["text"]}" ) %></td>
-          <% if logged_in? && current_user.past_courses.include?("#{@department} #{@coursenum}" )%>
-            <td>
-              <strong>You have already taken this course</strong>
-            </td>
-            <td>
-			 				<%= form_for current_user do |f| %>
-									<% current_user.past_courses.each do |p| %>
-											<% if p != "#{@department} #{val["text"]}" %>
-												 <%= f.hidden_field :past_courses, :multiple => true, :value => p %>
-											<% end %>
-									<% end %>
-									<% if current_user.past_courses.size() == 1 %> <!-- Array will now be empty -->
-										<%= f.hidden_field :past_courses, :multiple => true, :value => "" %>
-									<% end %>
-            	<%= f.submit 'Add to Past Courses' %>
-            	<% end %>
-            </td>
-          <% elsif logged_in? %>
-            <%= form_for current_user do |f| %>
-            	<% if current_user.past_courses != [] %>
-              	<% current_user.past_courses.each_with_index do |p,i| %>
-                	<% if i==0 %>
-                  	<%= f.hidden_field :past_courses, :multiple => true, :value => "#{@department} #{@coursenum}" %>
-                	<% end %>
-                	<% if current_user.past_courses != [""] %>
-                  	<%= f.hidden_field :past_courses, :multiple => true, :value => p %>
-									<% end %>
-              	<% end %>
-            	<% else %>
-              	<%= f.hidden_field :past_courses, :multiple => true, :value => "#{@department} #{@coursenum}" %>
-            <% end %>
-              <td>
-                <%= f.submit 'Add to Past Courses' %>
-              </td>
-          <% end %>
-          <% end %>
+          <td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl.split('/')[4..-1].join("/")}/#{val["text"]}" ) %></td>
+          <%= render partial: "add_past_course", locals: {department: @department, coursenum: @coursenum } %>
         </tr>
         <% end %>
       <% end %>

@@ -1,0 +1,36 @@
+<% if logged_in? && current_user.past_courses.include?("#{department} #{coursenum}" )%>
+	<td>
+		<strong>You have already taken this course</strong>
+	</td>
+	<td>
+		<%= form_for current_user do |f| %>
+			<% current_user.past_courses.each do |p| %>
+		<% if p != "#{department} #{coursenum}" %>
+						 <%= f.hidden_field :past_courses, :multiple => true, :value => p %>
+					<% end %>
+			<% end %>
+			<% if current_user.past_courses.size() == 1 %> <!-- Array will now be empty -->
+				<%= f.hidden_field :past_courses, :multiple => true, :value => "" %>
+			<% end %>
+			<%= f.submit "Remove from Past Courses" %>
+		<% end %>
+	</td>
+<% elsif logged_in? %>
+	<%= form_for current_user do |f| %>
+		<% if current_user.past_courses != [] %>
+			<% current_user.past_courses.each_with_index do |p,i| %>
+				<% if i==0 %>
+<%= f.hidden_field :past_courses, :multiple => true, :value => "#{department} #{coursenum}" %>
+				<% end %>
+				<% if current_user.past_courses != [""] %>
+					<%= f.hidden_field :past_courses, :multiple => true, :value => p %>
+				<% end %>
+			<% end %>
+		<% else %>
+<%= f.hidden_field :past_courses, :multiple => true, :value => "#{department} #{coursenum}" %>
+		<% end %>
+			<td>
+				<%= f.submit 'Add to Past Courses' %>
+			</td>
+	<% end %>
+<% end %>
