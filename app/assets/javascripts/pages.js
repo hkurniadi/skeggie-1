@@ -5,6 +5,7 @@ function process()
   var url= baseUrl + "/" + document.getElementById("semester").value + "/" + document.getElementById("department").value;
   if (document.getElementById("coursenum").value != null) {
     url += "/" + document.getElementById("coursenum").value;
+    var tempCourseNum = document.getElementById("coursenum").value;
   }
   var tempSemester = document.getElementById('semester').value;
   
@@ -12,22 +13,14 @@ function process()
   
   
   location.href=url;
-  
-  var semesterSelect =  document.getElementById('semester');
-  var departmentSelect = document.getElementById('department');
-  
-  for (var i, j=0; i = semesterSelect.options[j]; j++) {
-    if (i.value == tempSemester) {
-      semesterSelect.selectedIndex = j;
-      break;
-    }
-  }
-  
-  for (var i, j=0; i = departmentSelect.options[j]; j++) {
-    if (i.value == tempDepartment) {
-      departmentSelect.selectedIndex = j;
-      break;
-    }
-  }
+  document.getElementById("semester").value = tempSemester;
+  document.getElementById("department").value = tempDepartment;
+  document.getElementById("coursenum").value = tempCourseNum;
   return false;
+}
+
+function setValue(valueToSelect, idToSelect)
+{
+  var element = document.getElementById(idToSelect);
+  element.value = valueToSelect;
 }
