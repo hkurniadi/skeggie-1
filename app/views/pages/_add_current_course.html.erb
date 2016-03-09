@@ -1,0 +1,33 @@
+<% if logged_in? && !current_user.current_courses.include?("#{year} #{semester} #{department} #{coursenum} #{section} #{type}" )%>
+	<%= form_for current_user do |f| %>
+		<% if current_user.current_courses != [] %>
+			<% current_user.current_courses.each_with_index do |c,i| %>
+				<% if i==0 %>
+					<%= f.hidden_field :current_courses, :multiple => true, :value => "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
+				<% end %>
+				<% if current_user.current_courses != [""] %>
+					<%= f.hidden_field :current_courses, :multiple => true, :value => c %>
+				<% end %>
+			<% end %>
+		<% else %>
+			<%= f.hidden_field :current_courses, :multiple => true, :value => "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
+		<% end %>
+		<td>
+			<div class = "current_course_button"><%= f.submit 'Add to Current Courses' %></div>
+		</td>
+	<% end %>
+<% elsif logged_in? %>
+	<%= form_for current_user do |f| %>
+		<% current_user.current_courses.each do |p| %>
+			<% if p != "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
+				<%= f.hidden_field :current_courses, :multiple => true, :value => p %>
+			<% end %>
+		<% end %>
+		<% if current_user.current_courses.size() == 1 %> <!-- Array will now be empty -->
+			<%= f.hidden_field :current_courses, :multiple => true, :value => "" %>
+		<% end %>
+		<td>
+			<div class = "current_course_button"><%= f.submit "Remove from Cart" %></div>
+		</td>
+	<% end %>
+<% end %>

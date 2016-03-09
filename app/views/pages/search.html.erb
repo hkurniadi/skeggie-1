@@ -91,11 +91,19 @@
 
   </select> <br>
 
-  Course Number: <input type ="text" id = "coursenum">
+  <label for="coursenum">Course Number: </label>
+  <select name = "sortby" id = "sortby" form = "searchform">
+  	<option value = "1">Exactly</option>
+  	<option value = "2">Less than</option>
+  	<option value = "3">Greater than</option>
+  </select> 
+  <input type ="text" id = "coursenum">
+  
   <input type="submit" value="Search">
 </form>
 
 <% @cururl = request.original_url %> 
+<% @results = 0 %> <!-- Will be used to print out message if there are no results -->
 
 <% if @cururl.split('/').count >=5 %>
   <% @semester = @cururl.split('/')[4].split('%20')[0] %>
@@ -107,15 +115,16 @@
   <% end %>
 <% end %>
 
-<% if @cururl.split('/').count >=6 && (@cururl[@cururl.length()-4]=='/' or @cururl[@cururl.length()-1]=='W') %>
+<% if @cururl.split('/').count >=6 && (@cururl[@cururl.length()-6]=='/' or @cururl[@cururl.length()-3]=='W') %>
   <% @coursenum = @cururl.split('/')[6] %>
+  <% @sort = @cururl.split('/')[7] %>
   <%= javascript_tag do %>
     setValue(<%@coursenum%>, "coursenum");
   <% end %>
 <% end %>
 
 <% if !@department.nil? %>
-  <% if @coursenum.nil? %> <!-- No Course Number is specified meaning we want all courses for the semester -->
+  <% if @coursenum.nil? or @sort != "1" %> <!-- No Course Number is specified meaning we want all courses for the semester -->
     <% @response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}") %>
   <% else %>
     <% @response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{@year}/#{@semester}/#{@department}/#{@coursenum}") %>
@@ -124,27 +133,56 @@
   <% if @response.kind_of?(Array) %> <!-- Checking if response is valid -->
     <table class='search_results'>
       <% if @coursenum.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
-        <% @response.each do |val| %>
-        <tr>
-          <td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
-          <td class = 'course_title'><%= val["title"] %></td>
-          <td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
+				<% @response.each do |val| %>
+				<tr>
+					<td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
+					<td class = 'course_title'><%= val["title"] %></td>
+					<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
 					<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
+					<% @results += 1 %>
         </tr>
         <% end %>
       <% else %>
-        <% @response.each do |val| %>
-        <tr>
-          <td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
-          <td class = 'course_title'><%= val["title"] %></td>
-          <td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl.split('/')[4..-1].join("/")}/#{val["text"]}" ) %></td>
-          <%= render partial: "add_past_course", locals: {department: @department, coursenum: @coursenum } %>
-        </tr>
-        <% end %>
+				<% case @sort %>
+				<% when "1" %>
+					<% @response.each do |val| %>
+					<tr>
+						<td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
+						<td class = 'course_title'><%= val["title"] %></td>
+						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl.split('/')[4..-1].join("/")}/#{val["text"]}" ) %></td>
+						<%= render partial: "add_past_course", locals: {department: @department, coursenum: @coursenum } %>
+						<%= render partial: "add_current_course", locals: {year: @year, semester: @semester, department: @department, coursenum: @coursenum, section: val["text"], type: val["sectionCode"]} %>
+						<% @results += 1 %>
+					</tr>
+					<% end %>
+				<% when "2" %>
+					<% @response.each_with_index do |val, i| %>
+						<% break if val["text"] >= @coursenum %>
+						<tr>
+							<td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
+							<td class = 'course_title'><%= val["title"] %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
+							<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
+							<% @results += 1 %>
+						</tr>
+					<% end %>
+				<% when "3" %>	
+     			<% @response.each do |val| %>
+     				<% next if val["text"] <= @coursenum %>
+						<tr>
+							<td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
+							<td class = 'course_title'><%= val["title"] %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
+							<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
+							<% @results += 1 %>
+						</tr>
+					<% end %>
+				<% end %>
       <% end %>
     </table>
-  <% else %>
-    <p id='no_results'>Sorry, there are no courses matching your query.</p>
   <% end %>
+	<% if @results == 0 %>
+		<p id='no_results'>Sorry, there are no courses matching your query.</p>
+	<% end %>
 <% end %>
 

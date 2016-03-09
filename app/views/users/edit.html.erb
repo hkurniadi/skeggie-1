@@ -37,9 +37,11 @@
       <%= f.text_field :major %>
     </p>
     <p>
+			<%= f.label :past_courses, "Past Courses: " %><br>
       <% @user.past_courses.each do |p| %>
-        <%= f.hidden_field :past_courses, :multiple => true, :value => p %>
+				<%= f.text_field :past_courses, :multiple => true, :value => p %><br>
       <% end %>
+			<%= f.text_field :past_courses, :multiple => true, :value => "" %>
     </p>
     <p>
       <%= f.submit %>

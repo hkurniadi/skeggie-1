@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
   get '/' => 'pages#index', as: :home
   get '/profile/:id' => 'users#profile', as: :profile
+	get '/cart' => 'users#cart', as: :cart
   get '/search' => 'pages#search', as: :search
   get '/search/:semester/:subject' => 'pages#search'
-  get '/search/:semester/:subject/:coursenum' => 'pages#search'
+  get '/search/:semester/:subject/:coursenum/:sort' => 'pages#search'
   get '/course/:semester/:subject/:coursenum/:section' => 'pages#course'
   get '/schedule' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup

@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   end
   
   def show
-    @user = current_user
+		@user = User.find(params[:id])
   end
   
   def edit
@@ -14,10 +14,10 @@ class UsersController < ApplicationController
   
   def update
     @user = current_user
-    if @user.update(user_params)
-		redirect_to :back, alert: "Succesfully updated."
+		if @user.update(user_params)
+			redirect_to :back, alert: "Succesfully updated."
     else
-        render 'edit'
+      render 'edit'
     end
   end
   

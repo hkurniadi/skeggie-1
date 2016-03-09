@@ -1,0 +1,19 @@
+<% if current_user.current_courses[0] != "" %>
+	<% current_user.current_courses.each do |c| %>
+		<% csplit = c.split(" ") %>
+		<% @response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{csplit[0]}/#{csplit[1]}/#{csplit[2]}/#{csplit[3]}/#{csplit[4]}") %>
+		<ol>
+			<li>
+				<%= csplit[2..-2].join(" ") %>
+				<% @response["courseSchedule"].each do |lecTime| %> <!-- Lectures can be in different rooms and at different times on different days -->
+					<ul>
+						<li>  
+							<%= "#{lecTime["startTime"]} - #{lecTime["endTime"]}" %> <%= "#{lecTime["days"]}" %><br>
+							<%= "#{lecTime["buildingCode"]} #{lecTime["roomNumber"]}, #{lecTime["campus"]}" %> 
+						</li>
+					</ul>
+				<% end %>
+			</li>
+		</ol>
+	<% end %>
+<% end %>
