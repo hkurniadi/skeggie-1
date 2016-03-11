@@ -1,25 +1,73 @@
-<% if logged_in? && !current_user.current_courses.include?("#{year} #{semester} #{department} #{coursenum} #{section} #{type}" )%>
-	<%= form_for current_user do |f| %>
-		<% if current_user.current_courses != [] %>
-			<% current_user.current_courses.each_with_index do |c,i| %>
-				<% if i==0 %>
-					<%= f.hidden_field :current_courses, :multiple => true, :value => "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
+<% c_to_add = "#{year} #{semester} #{department} #{course_num} #{section} #{type}" %> <!-- used often here -->
+<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_to_add.split(" ")[0..4].join("/")}") %> <!-- Will be used to check time conflicts -->
+<% s_time = Array.new(response["courseSchedule"].count) %>
+<% e_time = Array.new(response["courseSchedule"].count) %>
+<% ldays = Array.new(response["courseSchedule"].count) %>
+<% response["courseSchedule"].each_with_index do |c,i| %> <!-- Can have multiple lecture times -->
+	<% s_time[i] = c["startTime"].split(":")[0].to_i %>
+	<% e_time[i] = c["endTime"].split(":")[0].to_i %>
+	<% ldays[i] = c["days"].split(", ") %>
+<% end %>
+
+<% same_time = false %> <!-- Used to check if course has time conflicts -->
+<% same_day = false %>
+
+<% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" )%>
+	<% if current_user.current_courses[0] != "" %> 
+		<% current_user.current_courses.each do |c| %>
+			<% c_course = c.split(" ") %>
+			<% response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{c_course[0]}/#{c_course[1]}/#{c_course[2]}/#{c_course[3]}/#{c_course[4]}") %>
+			<% response["courseSchedule"].each_with_index do |ct, i| %>
+				<% ct["days"].split(", ").each do |day| %>
+					<% ldays.each_with_index do |lday, j| %>
+						<% if lday.include?(day) %>
+							<% same_day = true %>
+							<% l_day_in = j %>
+						<% end %>
+					<% end %>
 				<% end %>
-				<% if current_user.current_courses != [""] %>
-					<%= f.hidden_field :current_courses, :multiple => true, :value => c %>
+				<% if same_day %>
+					<% ct_s_time = ct["startTime"].split(":")[0].to_i %>
+					<% ct_e_time = ct["endTime"].split(":")[0].to_i %>
+					<% ct_diff = ct_e_time - ct_s_time %>
+					<% s_time.each_with_index do |time,k| %>
+						<% if ct_s_time.between?(time,e_time[k]-1) || ct_e_time.between?(time+1, e_time[k]) %>
+							<% same_time = true %>
+							<% conflicted = c_course %>
+						<% end %>
+					<% end %>
 				<% end %>
 			<% end %>
-		<% else %>
-			<%= f.hidden_field :current_courses, :multiple => true, :value => "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
 		<% end %>
+	<% end %>
+	<% if !same_time %>		
+		<%= form_for current_user do |f| %>
+			<% if current_user.current_courses != [] %>
+				<% current_user.current_courses.each_with_index do |c,i| %>
+					<% if i==0 %>
+						<%= f.hidden_field :current_courses, :multiple => true, :value => "#{c_to_add}" %>
+					<% end %>
+					<% if current_user.current_courses != [""] %>
+						<%= f.hidden_field :current_courses, :multiple => true, :value => c %>
+					<% end %>
+				<% end %>
+			<% else %>
+				<%= f.hidden_field :current_courses, :multiple => true, :value => "#{c_to_add}" %>
+			<% end %>
+			<td>
+				<div class = "current_course_button"><%= f.submit 'Add to Current Courses' %></div>
+			</td>
+		<% end %>
+	<% else %>
 		<td>
-			<div class = "current_course_button"><%= f.submit 'Add to Current Courses' %></div>
+			<%= "This course has a time conflict with #{conflicted[2..4].join(" ")} " %>
 		</td>
 	<% end %>
 <% elsif logged_in? %>
+	
 	<%= form_for current_user do |f| %>
 		<% current_user.current_courses.each do |p| %>
-			<% if p != "#{year} #{semester} #{department} #{coursenum} #{section} #{type}" %>
+			<% if p != "#{c_to_add}" %>
 				<%= f.hidden_field :current_courses, :multiple => true, :value => p %>
 			<% end %>
 		<% end %>

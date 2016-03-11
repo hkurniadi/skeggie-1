@@ -97,30 +97,43 @@
   	<option value = "2">Less than</option>
   	<option value = "3">Greater than</option>
   </select> 
-  <input type ="text" id = "coursenum">
+  <input type ="text" id = "coursenum" value='' maxlength="3">
   
   <input type="submit" value="Search">
 </form>
 
 <% @cururl = request.original_url %> 
+<% @curyear = Date.today.year %> <!-- Will be used to check if course is from a past year -->
+<% @curmonth = Date.today.month %> <!-- Will determine semester that is in session -->
+
+<% case @curmonth %>
+<% when 1,2,3,4 %>
+	<% @cursem = 1 %>
+<% when 5,6,7,8 %>
+	<% @cursem = 2 %>
+<% else %>
+	<% @cursem = 3 %>
+<% end %>
+
 <% @results = 0 %> <!-- Will be used to print out message if there are no results -->
 
 <% if @cururl.split('/').count >=5 %>
   <% @semester = @cururl.split('/')[4].split('%20')[0] %>
+	<% case @semester %>
+	<% when "Spring" %>
+		<% @semi = 1 %>
+	<% when "Summer" %>
+		<% @semi = 2 %>
+	<% else %>
+		<% @semi = 3 %>
+	<% end %>
   <% @year = @cururl.split('/')[4].split('%20')[1] %>
   <% @department = @cururl.split('/')[5] %>
-  <%= javascript_tag do %>
-    setValue(<%"#{@semester} #{@year}"%>, "semester");
-    setValue(<%@department%>, "department");
-  <% end %>
 <% end %>
 
 <% if @cururl.split('/').count >=6 && (@cururl[@cururl.length()-6]=='/' or @cururl[@cururl.length()-3]=='W') %>
   <% @coursenum = @cururl.split('/')[6] %>
   <% @sort = @cururl.split('/')[7] %>
-  <%= javascript_tag do %>
-    setValue(<%@coursenum%>, "coursenum");
-  <% end %>
 <% end %>
 
 <% if !@department.nil? %>
@@ -137,21 +150,23 @@
 				<tr>
 					<td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
 					<td class = 'course_title'><%= val["title"] %></td>
-					<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
+					<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}/#{val["text"]}/1") %></td>
 					<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
 					<% @results += 1 %>
         </tr>
         <% end %>
       <% else %>
 				<% case @sort %>
-				<% when "1" %>
+				<% when "1" %> 
 					<% @response.each do |val| %>
 					<tr>
 						<td class = 'course_section'><%= "#{@department} " + "#{@coursenum} " + val["text"] %></td>
 						<td class = 'course_title'><%= val["title"] %></td>
-						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl.split('/')[4..-1].join("/")}/#{val["text"]}" ) %></td>
+						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{@cururl.split('/')[4..-2].join("/")}/#{val["text"]}" ) %></td>
 						<%= render partial: "add_past_course", locals: {department: @department, coursenum: @coursenum } %>
-						<%= render partial: "add_current_course", locals: {year: @year, semester: @semester, department: @department, coursenum: @coursenum, section: val["text"], type: val["sectionCode"]} %>
+						<% if @curyear <= @year.to_i && @cursem <= @semi %>
+							<%= render partial: "add_current_course", locals: {year: @year, semester: @semester, department: @department, course_num: @coursenum, section: val["text"], type: val["sectionCode"], conflicted: ""} %>
+						<% end %>
 						<% @results += 1 %>
 					</tr>
 					<% end %>
@@ -172,7 +187,7 @@
 						<tr>
 							<td class = 'dep_cid'><%= "#{@department} #{val["text"]}" %></td>
 							<td class = 'course_title'><%= val["title"] %></td>
-							<td class = 'course_link'><%= link_to("View Sections", "#{@cururl}#{val["text"]}") %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{@cururl.split('/')[0..-3].join("/")}/#{val["text"]}/1") %></td>
 							<%= render partial: "add_past_course", locals: {department: @department, coursenum: val["text"] } %>
 							<% @results += 1 %>
 						</tr>
