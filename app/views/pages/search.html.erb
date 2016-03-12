@@ -140,12 +140,25 @@
 
 <% if !department.nil? %>
   <% if course_num.nil? or sort != "1" %> <!-- No Course Number is specified meaning we want all courses for the semester -->
-    <% response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}") %>
+		<% for i in 0..10 %> <!-- Sometimes JSON response isn't true -->
+			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}") %>
+			<% if response.count != 1 %> <!-- Won't have error message -->
+				<% break %>
+			<% elsif response.count == 1 && !response.has_key?('errorMessage') %> <!-- Just one result, but not an error -->
+				<% break %>
+			<% end %>
+		<% end %>
   <% else %>
-    <% response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}") %>
+		<% for i in 0..10 %>
+			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}") %>
+			<% if response.count != 1 %>
+				<% break %>
+			<% elsif response.count == 1 && !response.has_key?('errorMessage')  %>
+				<% break %>
+			<% end %>
+		<% end %>
   <% end %>
-
-  <% if response.kind_of?(Array) %> <!-- Checking if response is valid -->
+	<% if response.kind_of?(Array) %> <!-- Checking if response is valid -->
     <table class='search_results'>
       <% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
 				<% response.each do |val| %>
@@ -202,4 +215,3 @@
 		<p id='no_results'>Sorry, there are no courses matching your query.</p>
 	<% end %>
 <% end %>
-

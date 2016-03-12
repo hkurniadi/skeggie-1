@@ -14,7 +14,12 @@
   <% course_section = cururl.split('/')[7] %>
 <% end %>
 
-<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{course_section}") %>
+<% for i in 0..10 %>
+	<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{course_section}") %>
+	<% if response.count != 1 %>
+		<% break %>
+	<% end %>
+<% end %>
 
 <h2>Course: <%= "#{response["info"]["name"]} #{response["info"]["term"]}" %></h2>
 <h3>Title: <%= "#{response["info"]["title"]}" %></h3>

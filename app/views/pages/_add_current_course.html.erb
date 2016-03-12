@@ -2,7 +2,12 @@
 
 <% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" )%>
 	<% if current_user.current_courses[0] != "" %> 
-		<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_to_add.split(" ")[0..4].join("/")}") %> <!-- Will be used to check time conflicts -->
+		<% for i in 0..10 %>
+			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_to_add.split(" ")[0..4].join("/")}") %> <!-- Will be used to check time conflicts -->
+			<% if response.count != 1 %>
+				<% break %>
+			<% end %>
+		<% end %>
 		<% st_times = Array.new(response["courseSchedule"].count) %>
 		<% end_times = Array.new(response["courseSchedule"].count) %>
 		<% ldays = Array.new(response["courseSchedule"].count) %>
@@ -18,7 +23,12 @@
 		<% current_user.current_courses.each do |c| %>
 			<% same_day = false %> <!-- Reset for every course just incase multiple are in the way -->
 			<% c_course = c.split(" ") %>
-			<% response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{c_course[0]}/#{c_course[1]}/#{c_course[2]}/#{c_course[3]}/#{c_course[4]}") %>
+			<% for i in 0..10 %>
+				<% response = HTTParty.get ("http://www.sfu.ca/bin/wcm/course-outlines?#{c_course[0]}/#{c_course[1]}/#{c_course[2]}/#{c_course[3]}/#{c_course[4]}") %>
+				<% if response.count != 1 %>
+					<% break %>
+				<% end %>
+			<% end %>
 			<% response["courseSchedule"].each_with_index do |ct, i| %>
 				<% ct["days"].split(", ").each do |day| %>
 					<% ldays.each_with_index do |lday, j| %>
