@@ -8,7 +8,7 @@ class AccessController < ApplicationController
     if @user && @user.authenticate(params[:session][:password])
       # Log the user in and redirect to the user's show page.
       session[:user_id] = @user.id
-      redirect_to action: 'profile', controller: 'users', id: @user.id
+			redirect_to action: 'profile', controller: 'users', username: @user.username
     else
       # Create an error message.
       flash.now[:alert] = 'Invalid username/password combination.'

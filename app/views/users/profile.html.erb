@@ -13,12 +13,12 @@
 			<% current_user.friend_ids.each do |f| %>
 				<li>
 					<%= "#{User.find(f).username}" %>
-					<%= link_to("View Profile", profile_path(f)) %>
+					<%= link_to("View Profile", profile_path(User.find(f).username)) %>
 				</li>
 			<% end %>
  		</ul>
  	</p>
-  <p><%= link_to("Edit", edit_user_path) %></p>
+	<p><%= link_to("Edit", edit_user_path) %></p>
 
 <% elsif logged_in? && !current_user.friend_ids.include?(@user.id) %>
   <!-- add friend button here-->

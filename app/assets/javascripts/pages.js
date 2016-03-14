@@ -1,3 +1,36 @@
+function q_search()
+{
+	var today = new Date();
+	var month = today.getMonth() + 1;
+	var year = today.getFullYear();
+	var getUrl = window.location;
+	var baseUrl = getUrl.protocol + "//" + getUrl.host;
+	if (document.getElementById("search_for").value == "1") {
+		var url = baseUrl + "/search";
+		if (document.getElementById("search_term").value != "" && document.getElementById("search_term").value.split(" ").length == 2) {
+			if(month >=1 && month <= 4) {
+			var semester = "Spring";
+		}
+		else if(month >=5 && month <=8) {
+			var semester = "Summer";
+		}
+		else {
+			var semester = "Fall";
+		}
+		url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.split(" ").join("/");;
+		}
+		location.href = url;
+	}
+	else {
+		var url = baseUrl + "/" + "profile/search";
+		if (document.getElementById("search_term").value != ""){
+				url += "/1/" + document.getElementById("search_term").value;
+		}
+		location.href = url;
+	}
+	return false;
+}
+
 function process()
 {
   var getUrl = window.location;

@@ -1,1 +1,9 @@
-<h2>Home Page</h2>
+<form onSubmit="return q_search();" id = "searchform">
+	<label for = "search_for">Quick search: </label>
+	<select name = "search_for" id = "search_for" form = "searchform">
+		<option value = "1" selected>Course</option>
+		<option value = "2">User</option>
+	</select>
+	<input name = "search_term" id = "search_term" form = "serachform" placeholder = "eg: CMPT 123 or User">
+	<input type = "submit" value = "Search">
+</form>

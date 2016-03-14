@@ -1,0 +1,58 @@
+<% cur_url = request.original_url %> 
+
+<form onSubmit ="return u_search();" id="searchform" >
+	<label for="search_by">Search by: </label>
+	<select name = "search_by" id = "search_by" form = "searchform">
+		<option value = "1">Username</option>
+		<option value = "2">First Name</option>
+		<option value = "3">Last Name</option>
+	</select>
+	
+	<input type = "text" id = "search_term">
+	<input type = "submit" value = "Search">
+</form>
+
+<% if cur_url.split('/').count >=6 %>
+	<% search_by = cur_url.split('/')[5] %>
+	<% search_term = cur_url.split('/')[6] %>
+<% end %>
+
+<% case search_by %>
+<% when "1" %>
+	<% user = User.find_by_username(search_term) %>
+	<% if user != nil %>
+		<li>
+			<%= link_to("#{search_term}", profile_path(user.username)) %>
+		</li>
+	<% else %>
+		<p>No such user.</p>
+	<% end %>
+	
+<% when "2" %>
+	<% user = User.where(:first_name => search_term).order('id asc') %>
+	<% if user.count != 0 %> 
+	<ol>
+		<% user.each do |u| %>
+			<li>
+				<%= link_to("#{u.first_name} #{u.last_name}", profile_path(u.username)) %> <!-- Assumes if user has first name, they will have first name -->
+			</li>
+		<% end %>
+	</ol>
+	<% else %>
+		<p>No users with the first name: <%= "#{search_term}" %></p>
+	<% end %>
+	
+<% when "3" %>
+	<% user = User.where(:last_name => search_term).order('id asc') %>
+	<% if user.count != 0 %> 
+		<ol>
+			<% user.each do |u| %>
+				<li>
+					<%= link_to("#{u.first_name} #{u.last_name}", profile_path(u.username)) %> <!-- Assumes if user has last name, they have last name -->
+				</li>
+			<% end %>
+		</ol>
+	<% else %>
+		<p>No users with the last name: <%= "#{search_term}" %></p>
+	<% end %>
+<% end %>

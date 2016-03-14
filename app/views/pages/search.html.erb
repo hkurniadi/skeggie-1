@@ -191,7 +191,7 @@
 						<tr>
 							<td class = 'dep_cid'><%= "#{department} #{val["text"]}" %></td>
 							<td class = 'course_title'><%= val["title"] %></td>
-							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url}#{val["text"]}") %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split('/')[0..-3].join("/")}/#{val["text"]}/1") %></td>
 							<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
 							<% results += 1 %>
 						</tr>

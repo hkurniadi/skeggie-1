@@ -1,15 +1,15 @@
 class UsersController < ApplicationController
   
   def profile
-    @user = User.find(params[:id])
+		@user = User.find_by_username(params[:username])
   end
   
   def show
-		@user = User.find(params[:id])
+		@user = User.find(params[:username])
   end
   
   def edit
-    @user = User.find(params[:id])
+		@user = User.find_by_username(params[:username])
   end
   
   def update
@@ -37,13 +37,17 @@ class UsersController < ApplicationController
   end
   
   def schedule
-    
+		@user = User.find(params[:id])
   end
   
   def cart
     
   end
   
+	def search
+		@user = User.all
+	end
+	
   private
   
   def user_params

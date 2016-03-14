@@ -1,12 +1,15 @@
 Rails.application.routes.draw do
   get '/' => 'pages#index', as: :home
-  get '/profile/:id' => 'users#profile', as: :profile
+	get '/profile/search' => 'users#profile_search', as: :p_search
+	get '/profile/search/:search_by/:search_term' => 'users#profile_search'
+	get '/profile/:username' => 'users#profile', as: :profile
+	get '/users/:username/edit' => 'users#edit', as: :edit_user
 	get '/cart' => 'users#cart', as: :cart
   get '/search' => 'pages#search', as: :search
   get '/search/:semester/:subject' => 'pages#search'
   get '/search/:semester/:subject/:coursenum/:sort' => 'pages#search'
   get '/course/:semester/:subject/:coursenum/:section' => 'pages#course'
-  get '/schedule' => 'users#schedule', as: :schedule
+	get '/schedule/:id' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup
   get '/login' => 'access#login', as: :login  
   post   'login'   => 'access#attempt_login'

@@ -12,10 +12,12 @@
    	<td><%= link_to('Home', home_path) %></td>
     <td><%= link_to('Search', search_path) %></td>
     <% if logged_in? %>
-      <td><%= link_to('Schedule', schedule_path) %></td>
-      <td><%= link_to('Profile', profile_path(current_user.id)) %></td>
-      <td><%= link_to('Log out', logout_path, method: :delete) %></td>
+			<td><%= link_to('Schedule', schedule_path(current_user.username)) %></td>
+			<td><%= link_to('Profile', profile_path(current_user.username)) %></td>
       <td><%= link_to('Cart', cart_path) %></td>
+			<td><%= link_to('Users', p_search_path) %></td>
+      <td><%= link_to('Log out', logout_path, method: :delete) %></td>
+      
     <% else %>
       <td><%= link_to('Login', login_path) %></td>
     <% end %>
