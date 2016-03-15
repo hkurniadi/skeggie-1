@@ -29,11 +29,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       session[:user_id] = @user.id
-<<<<<<< HEAD
       redirect_to action: 'profile', username: @user.username
-=======
-			redirect_to action: 'profile', username: @user.username
->>>>>>> 22d828ee20c8ebe15dbb21402defb036f59ff6ad
     else
       flash.now[:alert] = "Username already taken, please enter a different username."
       render 'new'
