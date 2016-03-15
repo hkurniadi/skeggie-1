@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   get '/search/:semester/:subject' => 'pages#search'
   get '/search/:semester/:subject/:coursenum/:sort' => 'pages#search'
   get '/course/:semester/:subject/:coursenum/:section' => 'pages#course'
-	get '/schedule/:id' => 'users#schedule', as: :schedule
+	get '/schedule/:username' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup
   get '/login' => 'access#login', as: :login  
   post   'login'   => 'access#attempt_login'

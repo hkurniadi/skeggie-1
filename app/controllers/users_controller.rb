@@ -29,7 +29,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       session[:user_id] = @user.id
-      redirect_to action: 'profile', id: @user.id
+			redirect_to action: 'profile', username: @user.username
     else
       flash.now[:alert] = "Username already taken, please enter a different username."
       render 'new'
@@ -37,7 +37,7 @@ class UsersController < ApplicationController
   end
   
   def schedule
-		@user = User.find_by_username(params[:username])
+		@current_courses = User.find_by_username(params[:username]).current_courses
   end
   
   def cart
