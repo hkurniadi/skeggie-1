@@ -1,25 +1,43 @@
-<% if !@user.first_name.nil? %>
-  <p><strong>Name: </strong><%= "#{@user.first_name} #{@user.last_name}"%></p>
-<% end %>
+<div class="panel panel-default">
+  <div class="panel-heading">Your Profile</div>
+  	<div class="panel-body">
+  		<% if logged_in? && current_user == @user %>
+  			<div class="fileupload fileupload-new" data-provides="fileupload">
+  				<div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
+  				<div>
+    					<span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+    					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+  				</div>
+			</div>
+		<% end %>
+		<% if !@user.first_name.nil? %>
+	  		<p><strong>Name: </strong><%= "#{@user.first_name} #{@user.last_name}"%></p>
+		<% end %>
+	
+		<% if !@user.major.nil? %>
+	  		<p><strong>Major:</strong> <%= @user.major %> </p>
+		<% end %>
+  </div>
+</div>
 
-<% if !@user.major.nil? %>
-  <p><strong>Major:</strong> <%= @user.major %> </p>
-<% end %>
-
-<% if current_user == @user %>
- 	<p>
- 		<strong>Friends: </strong>
- 		<ul>
-			<% current_user.friend_ids.each do |f| %>
-				<li>
+<div class ="panel panel-default">
+	<div class ="panel-heading">Friends List</div>
+		<div class="panel-body">
+			<% if current_user == @user %>
+ 				<p>
+ 				<strong>Friends: </strong>
+ 				<ul>
+				<% current_user.friend_ids.each do |f| %>
+					<li>
 					<%= "#{User.find(f).username}" %>
 					<%= link_to("View Profile", profile_path(User.find(f).username)) %>
-				</li>
-			<% end %>
- 		</ul>
- 	</p>
-	<p><%= link_to("Edit", edit_user_path) %></p>
-
+					</li>
+				<% end %>
+ 				</ul>
+ 				</p>
+				<p><%= link_to("Edit", edit_user_path) %></p>
+		</div>
+</div>
 <% elsif logged_in? && !current_user.friend_ids.include?(@user.id) %>
   <!-- add friend button here-->
 	<%= form_for current_user do |f| %>

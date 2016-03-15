@@ -17,7 +17,9 @@ function q_search()
 		else {
 			var semester = "Fall";
 		}
-		url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.split(" ").join("/");;
+		if (document.getElementById("search_term").value.split(" ")[1].length == 3 || (document.getElementById("search_term").value.split(" ")[1].length == 4 && document.getElementById("search_term").value.split(" ")[1][3] == "W")){
+			url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.split(" ").join("/")+"/1";
+		}
 		}
 		location.href = url;
 	}

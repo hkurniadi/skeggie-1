@@ -1,15 +1,16 @@
 <% cur_url = request.original_url %> 
 
-<form onSubmit ="return u_search();" id="searchform" >
-	<label for="search_by">Search by: </label>
-	<select name = "search_by" id = "search_by" form = "searchform">
-		<option value = "1">Username</option>
-		<option value = "2">First Name</option>
-		<option value = "3">Last Name</option>
-	</select>
-	
-	<input type = "text" id = "search_term">
-	<input type = "submit" value = "Search">
+<form onSubmit="return u_search();" id="searchform" >
+	<div class="form-group form-inline">	
+		<label for="search_by">Search by: </label>
+		<select class="form-control" name = "search_by" id = "search_by" form = "searchform">
+			<option value = "1" selected>Username</option>
+			<option value = "2">First Name</option>
+			<option value = "3">Last Name</option>
+		</select>
+		<input type = "text" class="form-control" id = "search_user" form = "searchform">
+		<input type = "submit" class="btn btn-default" id = "user_search" value = "Search">
+	</div>
 </form>
 
 <% if cur_url.split('/').count >=6 %>

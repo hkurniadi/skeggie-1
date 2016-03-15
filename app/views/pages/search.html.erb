@@ -32,108 +32,112 @@
   <% sort = cur_url.split('/')[7] %>
 <% end %>
 
-<form onSubmit="return process();" id="searchform">
-	<label for="semester">Semester: </label>
-	<select name = "semester" id = "semester" form = "searchform">
-	<option value = "Summer 2014">Summer 2014</option>
-	<option value = "Fall 2014" >Fall 2014</option>
-	<option value = "Spring 2015" >Spring 2015</option>
-	<option value = "Summer 2015" >Summer 2015</option>
-	<option value = "Fall 2015" >Fall 2015</option>
-	<option value = "Spring 2016" selected = "selected">Spring 2016</option>
-	<option value = "Summer 2016">Summer 2016</option>
+<form role="form" onSubmit="return process();" id="searchform">
+	<div class="form-group">	
+		<label for="semester">Term: </label>
+			<select class="form-control" name = "semester" id = "semester" form = "searchform">
+				<option value = "Summer 2014">Summer 2014</option>
+				<option value = "Fall 2014" >Fall 2014</option>
+				<option value = "Spring 2015" >Spring 2015</option>
+				<option value = "Summer 2015" >Summer 2015</option>
+				<option value = "Fall 2015" >Fall 2015</option>
+				<option value = "Spring 2016" selected = "selected">Spring 2016</option>
+				<option value = "Summer 2016">Summer 2016</option>
+			</select> <br>
+	</div>
+	
+	<div class="form-group">
+		<label for="department">Department: </label>
+			<select class="form-control" name = "department" id = "department" form = "searchform">
+				<option value = "ACMA" >ACMA</option>
+				<option value = "ALS" >ALS</option>
+				<option value = "APMA" >APMA</option>
+				<option value = "ARCH" >ARCH</option>
+				<option value = "ASC" >ASC</option>
+				<option value = "BISC" >BISC</option>
+				<option value = "BPK" >BPK</option>
+				<option value = "BUEC" >BUEC</option>
+				<option value = "BUS" >BUS</option>
+				<option value = "CHEM" >CHEM</option>
+				<option value = "CHIN" >CHIN</option>
+				<option value = "CMNS" >CMNS</option>
+				<option value = "CMPT" >CMPT</option>
+				<option value = "COGS" >COGS</option>
+				<option value = "CRIM" >CRIM</option>
+				<option value = "DEVS" >DEVS</option>
+				<option value = "DIAL" >DIAL</option>
+				<option value = "DMED" >DMED</option>
+				<option value = "EASC" >EASC</option>
+				<option value = "ECO" >ECO</option>
+				<option value = "ECON" >ECON</option>
+				<option value = "EDPR" >EDPR</option>
+				<option value = "EDUC" >EDUC</option>
+				<option value = "ENGL" >ENGL</option>
+				<option value = "ENSC" >ENSC</option>
+				<option vlaue = "ENV" >ENV</option>
+				<option value = "EVSC" >EVSC</option>
+				<option value = "FAL" >FAL</option>
+				<option value = "FAN" >FAN</option>
+				<option value = "FEP" >FEP</option>
+				<option value = "FNLG" >FNLG</option>
+				<option value = "FNST" >FNST</option>
+				<option value = "FPA" >FPA</option>
+				<option value = "FREN" >FREN</option>
+				<option value = "GEOG" >GEOG</option>
+				<option value = "GERM" >GERM</option>
+				<option value = "GERO" >GERO</option>
+				<option value = "GRAD" >GRAD</option>
+				<option value = "GRK" >GRK</option>
+				<option value = "GSWS" >GSWS</option>
+				<option value = "HIST" >HIST</option>
+				<option value = "HS" >HS</option>
+				<option value = "HSCI" >HSCI</option>
+				<option value = "HUM" >HUM</option>
+				<option value = "IAT" >IAT</option>
+				<option value = "IS" >IS</option>
+				<option value = "ITAL" >ITAL</option>
+				<option value = "JAPN" >JAPN</option>
+				<option value = "LAS" >LAS</option>
+				<option value = "LBRL" >LBRL</option>
+				<option value = "LBST" >LBST</option>
+				<option value = "LING" >LING</option>
+				<option value = "LS" >LS</option>
+				<option value = "MACM" >MACM</option>
+				<option value = "MATH" >MATH</option>
+				<option value = "MBB" >MBB</option>
+				<option value = "MSE" >MSE</option>
+				<option value = "NUSC" >NUSC</option>
+				<option value = "ONC" >ONC</option>
+				<option value = "PERS" >PERS</option>
+				<option value = "PHIL" >PHIL</option>
+				<option value = "PHYS" >PHYS</option>
+				<option value = "PLCY" >PLCY</option>
+				<option value = "POL" >POL</option>
+				<option value = "PSYC" >PSYC</option>
+				<option value = "PUB" >PUB</option>
+				<option value = "REM" >REM</option>
+				<option value = "SA" >SA</option>
+				<option value = "SAR" >SAR</option>
+				<option value = "SCD" >SCD</option>
+				<option value = "SCI" >SCI</option>
+				<option value = "SPAN" >SPAN</option>
+				<option value = "STAT" >STAT</option>
+				<option value = "URB" >URB</option>
+				<option value = "WL" >WL</option>
+			</select> <br>
+	</div>
+	
+	<div class="form-group form-inline">
+		<label for="coursenum">Course Number: </label>
+		<select class="form-control" name = "sortby" id = "sortby" form = "searchform" value="<%= !sort.nil? ? "#{sort}" : "1"%>">
+			<option value = "1">Exactly</option>
+			<option value = "2">Less than</option>
+			<option value = "3">Greater than</option>
+		</select> 
+		<input class="form-control" type ="text" id = "coursenum" value='<%= !course_num.nil? ? "#{course_num}" : ""%>' maxlength="3">
 
-	</select> <br>
-
-	<label for="department">Department: </label>
-	<select name = "department" id = "department" form = "searchform">
-		<option value = "ACMA" >ACMA</option>
-		<option value = "ALS" >ALS</option>
-		<option value = "APMA" >APMA</option>
-		<option value = "ARCH" >ARCH</option>
-		<option value = "ASC" >ASC</option>
-		<option value = "BISC" >BISC</option>
-		<option value = "BPK" >BPK</option>
-		<option value = "BUEC" >BUEC</option>
-		<option value = "BUS" >BUS</option>
-		<option value = "CHEM" >CHEM</option>
-		<option value = "CHIN" >CHIN</option>
-		<option value = "CMNS" >CMNS</option>
-		<option value = "CMPT" >CMPT</option>
-		<option value = "COGS" >COGS</option>
-		<option value = "CRIM" >CRIM</option>
-		<option value = "DEVS" >DEVS</option>
-		<option value = "DIAL" >DIAL</option>
-		<option value = "DMED" >DMED</option>
-		<option value = "EASC" >EASC</option>
-		<option value = "ECO" >ECO</option>
-		<option value = "ECON" >ECON</option>
-		<option value = "EDPR" >EDPR</option>
-		<option value = "EDUC" >EDUC</option>
-		<option value = "ENGL" >ENGL</option>
-		<option value = "ENSC" >ENSC</option>
-		<option vlaue = "ENV" >ENV</option>
-		<option value = "EVSC" >EVSC</option>
-		<option value = "FAL" >FAL</option>
-		<option value = "FAN" >FAN</option>
-		<option value = "FEP" >FEP</option>
-		<option value = "FNLG" >FNLG</option>
-		<option value = "FNST" >FNST</option>
-		<option value = "FPA" >FPA</option>
-		<option value = "FREN" >FREN</option>
-		<option value = "GEOG" >GEOG</option>
-		<option value = "GERM" >GERM</option>
-		<option value = "GERO" >GERO</option>
-		<option value = "GRAD" >GRAD</option>
-		<option value = "GRK" >GRK</option>
-		<option value = "GSWS" >GSWS</option>
-		<option value = "HIST" >HIST</option>
-		<option value = "HS" >HS</option>
-		<option value = "HSCI" >HSCI</option>
-		<option value = "HUM" >HUM</option>
-		<option value = "IAT" >IAT</option>
-		<option value = "IS" >IS</option>
-		<option value = "ITAL" >ITAL</option>
-		<option value = "JAPN" >JAPN</option>
-		<option value = "LAS" >LAS</option>
-		<option value = "LBRL" >LBRL</option>
-		<option value = "LBST" >LBST</option>
-		<option value = "LING" >LING</option>
-		<option value = "LS" >LS</option>
-		<option value = "MACM" >MACM</option>
-		<option value = "MATH" >MATH</option>
-		<option value = "MBB" >MBB</option>
-		<option value = "MSE" >MSE</option>
-		<option value = "NUSC" >NUSC</option>
-		<option value = "ONC" >ONC</option>
-		<option value = "PERS" >PERS</option>
-		<option value = "PHIL" >PHIL</option>
-		<option value = "PHYS" >PHYS</option>
-		<option value = "PLCY" >PLCY</option>
-		<option value = "POL" >POL</option>
-		<option value = "PSYC" >PSYC</option>
-		<option value = "PUB" >PUB</option>
-		<option value = "REM" >REM</option>
-		<option value = "SA" >SA</option>
-		<option value = "SAR" >SAR</option>
-		<option value = "SCD" >SCD</option>
-		<option value = "SCI" >SCI</option>
-		<option value = "SPAN" >SPAN</option>
-		<option value = "STAT" >STAT</option>
-		<option value = "URB" >URB</option>
-		<option value = "WL" >WL</option>
-
-	</select> <br>
-
-	<label for="coursenum">Course Number: </label>
-	<select name = "sortby" id = "sortby" form = "searchform" value="<%= !sort.nil? ? "#{sort}" : "1"%>">
-		<option value = "1">Exactly</option>
-		<option value = "2">Less than</option>
-		<option value = "3">Greater than</option>
-	</select> 
-	<input type ="text" id = "coursenum" value='<%= !course_num.nil? ? "#{course_num}" : ""%>' maxlength="3">
-
-	<input type="submit" value="Search">
+		<input type="submit" class="btn btn-default" value="Search">
+	</div>
 </form>
 
 
@@ -151,9 +155,9 @@
   <% else %>
 		<% for i in 0..10 %>
 			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}") %>
-			<% if response.count != 1 %>
+			<% if response.count != 0 %>
 				<% break %>
-			<% elsif response.count == 1 && !response.has_key?('errorMessage')  %>
+			<% elsif !response[0].nil? %>
 				<% break %>
 			<% end %>
 		<% end %>
@@ -163,7 +167,7 @@
       <% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
 				<% response.each do |val| %>
 				<tr>
-					<td class = 'dep_cid'><%= "#{department} #{val["text"]}" %></td>
+					<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
 					<td class = 'course_title'><%= val["title"] %></td>
 					<td class = 'course_link'><%= link_to("View Sections", "#{cur_url}/#{val["text"]}/1") %></td>
 					<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
@@ -175,7 +179,7 @@
 				<% when "1" %> 
 					<% response.each do |val| %>
 					<tr>
-						<td class = 'course_section'><%= "#{department} " + "#{course_num} " + val["text"] %></td>
+						<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + val["text"] %></td>
 						<td class = 'course_title'><%= val["title"] %></td>
 						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/")}/#{val["text"]}" ) %></td>
 						<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
@@ -189,7 +193,7 @@
 					<% response.each_with_index do |val, i| %>
 						<% break if val["text"] >= course_num %>
 						<tr>
-							<td class = 'dep_cid'><%= "#{department} #{val["text"]}" %></td>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
 							<td class = 'course_title'><%= val["title"] %></td>
 							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split('/')[0..-3].join("/")}/#{val["text"]}/1") %></td>
 							<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
@@ -200,7 +204,7 @@
      			<% response.each do |val| %>
      				<% next if val["text"] <= course_num %>
 						<tr>
-							<td class = 'dep_cid'><%= "#{department} #{val["text"]}" %></td>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
 							<td class = 'course_title'><%= val["title"] %></td>
 							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split('/')[0..-3].join("/")}/#{val["text"]}/1") %></td>
 							<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
