@@ -17,8 +17,9 @@ function q_search()
 		else {
 			var semester = "Fall";
 		}
-		if (document.getElementById("search_term").value.split(" ")[1].length == 3 || (document.getElementById("search_term").value.split(" ")[1].length == 4 && document.getElementById("search_term").value.split(" ")[1][3] == "W")){
-			url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.split(" ").join("/")+"/1";
+		//if (document.getElementById("search_term").value.split(" ")[1].length == 3 || (document.getElementById("search_term").value.split(" ")[1].length == 4 && document.getElementById("search_term").value.split(" ")[1][3] == "W")){
+		if (document.getElementById("search_term").value.split(" ")[1].length <= 4){
+			url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.toUpperCase().split(" ").join("/")+"/1";
 		}
 		}
 		location.href = url;
@@ -39,9 +40,22 @@ function process()
 	var max = document.getElementById("coursenum").maxLength;
   var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
   var url= baseUrl + "/" + document.getElementById("semester").value + "/" + document.getElementById("department").value;
-  if ((document.getElementById("coursenum").value != '') && (document.getElementById("coursenum").value.length == max)) {
-    url += "/" + document.getElementById("coursenum").value + "/" + document.getElementById("sortby").value;
+  
+  if ((document.getElementById("coursenum").value != '') && (document.getElementById("coursenum").value.length <= max)) {
+    url += "/" + document.getElementById("coursenum").value.toUpperCase() + "/" + document.getElementById("sortby").value;
     var tempCourseNum = document.getElementById("coursenum").value;
+  }
+  if (document.getElementById("wqb_0").checked == true) {
+  	url += "&Writing"
+  }
+  if (document.getElementById("wqb_1").checked == true) {
+  	url += "&Quantitative"
+  }if (document.getElementById("wqb_2").checked == true) {
+  	url += "&Breadth-Humanities"
+  }if (document.getElementById("wqb_3").checked == true) {
+  	url += "&Breadth-Science"
+  }if (document.getElementById("wqb_4").checked == true) {
+  	url += "&Breadth-Social Sciences"
   }
   location.href=url;
   return false;

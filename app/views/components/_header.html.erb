@@ -1,36 +1,51 @@
-<head></head>
-<div class="content row">
+<!--<head></head>-->
+<!--<div class="content row">
 	<div class="col-lg-12">
 		<header class = "clearfix">
 			<section id="branding">
 				<%= link_to('Skeggie', home_path)%>
 			</section><!-- branding -->
 
-			<section class="navbar">
-				<ul class="nav navbar-nav">
-				    <li><%= link_to('Home', home_path)%></li>
-                    <li class = "dropdown">
-                    	<a href="#" class = "dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></a>
-                    	<ul class="dropdown-menu" role="menu" aria-labelledby="ddMenu">
-                    		<li><%= link_to('Courses',search_path, :tabindex => "-1") %></li>
-                    		<li><%= link_to('Users',p_search_path, :tabindex => "-1") %></li>
-                    	</ul><!--dropdown menu-->
-                    </li>
-                    
-				    <% if logged_in? %>
-    				    <li><%= link_to('Profile', profile_path(current_user.username))%></li>
-    			    	<li><%= link_to('My Schedule', schedule_path(current_user.username)) %></li>
-    			    	<li><%= link_to('Cart', cart_path, "data-toggle" => "popover", :title => "Course Cart", "data-content" => "Empty Cart", "data-placement" => "bottom") %></li>
-    					<li><%= link_to('Log out', logout_path, method: :delete) %></li>
-    					<li><%= render "components/calendar" %></li>
-    				<% else %>
-    				    <li><%= link_to('Login', login_path) %></li>
-    				<% end %>
-                    <%= render "components/quicksearch" %>
-                    
-				</ul><!-- nav -->
-			</section><!-- navbar -->
+			<nav class="navbar navbar-inverse">
+				<div class='container-fluid'>
+					<div class='navbar-header'>
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+	        				<span class="icon-bar"></span>
+	        				<span class="icon-bar"></span>
+	        				<span class="icon-bar"></span> 
+	     				 </button>
+	     				 <a class='navbar-brand text-center'><%= link_to('Skeggie', home_path)%></a>
+	     			</div>
+	     			
+	     			<div class='collapse navbar-collapse' id='myNavbar'>
+						<ul class="nav navbar-nav">
+						    <li><%= link_to('Home', home_path)%></li>
+		                    <li class = "dropdown">
+		                    	<a href="#" class = "dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></a>
+		                    	<ul class="dropdown-menu" role="menu" aria-labelledby="ddMenu">
+		                    		<li><%= link_to('Courses',search_path, :tabindex => "-1") %></li>
+		                    		<li><%= link_to('Users',p_search_path, :tabindex => "-1") %></li>
+		                    	</ul><!--dropdown menu-->
+		                    </li>
+		                    
+						    <% if logged_in? %>
+		    				    <li><%= link_to('Profile', profile_path(current_user.username))%></li>
+		    			    	<li><%= link_to('My Schedule', schedule_path(current_user.username)) %></li>
+		    			    	<li><%= link_to('Cart', cart_path, "data-toggle" => "popover", :title => "Course Cart", "data-content" => "Empty Cart", "data-placement" => "bottom") %></li>
+		    					<li><%= link_to('Log out', logout_path, method: :delete) %></li>
+		    					<li><%= render "components/calendar" %></li>
+		    				<% else %>
+		    				    <li><%= link_to('Login', login_path) %></li>
+		    				<% end %>
+						</ul><!-- nav -->
+						
+						<ul class='nav navbar-nav navbar-right'>
+							<li><%= render "components/quicksearch" %></li>
+						</ul><!-- .navbar-right -->
+					</div>
+				</div>
+			</nav><!-- navbar -->
 
-		</header><!-- header -->
+		<!--</header><!-- header -->
 	</div><!-- column -->
-</div><!-- content -->
+<!--</div><!-- content -->

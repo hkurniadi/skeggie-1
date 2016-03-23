@@ -14,8 +14,8 @@ class UsersController < ApplicationController
   
   def update
     @user = current_user
-		if @user.update(user_params)
-			redirect_to :back, alert: "Succesfully updated."
+    if @user.update(user_params)
+	    redirect_to :back, alert: "Succesfully updated."
     else
       render 'edit'
     end

@@ -1,5 +1,5 @@
 <% c_to_add = "#{year} #{semester} #{department} #{course_num} #{section} #{type}" %> <!-- used often here -->
-
+<% cur_url = request.original_url %>
 <% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" ) && section[0] != "G"%>
 	<% if current_user.current_courses[0] != "" %> 
 		<% for i in 0..10 %>
@@ -8,6 +8,8 @@
 				<% break %>
 			<% end %>
 		<% end %>
+		<% instruct_f = response["instructor"][0]["commonName"] %>
+		<% instruct_l = response["instructor"][0]["lastName"] %>
 		<% st_times = Array.new(response["courseSchedule"].count) %>
 		<% end_times = Array.new(response["courseSchedule"].count) %>
 		<% ldays = Array.new(response["courseSchedule"].count) %>
@@ -70,12 +72,21 @@
 			<td>
 				<div class = "current_course_button"><%= f.submit "Add to cart"%></div>
 			</td>
+			<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+				<td>
+					<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct_f}+#{instruct_l}&_action_search=Search")) %>
+					<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+					<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+					<%= grade = testing.split('<div class="grade">')[1][0..2] %>
+				</td>
+			<% end %>
 		<% end %>
 	<% else %>
 		<td>
 			<strong>
 				<% conflicted.each_with_index do |con, i| %>
 					<% if i == 0 %>
+						<td>
 						<%= "This course has a time conflict with #{con.split(" ")[2..4].join(" ")} " %>
 						<% if con_num == 1 %> <!-- Offer to replace course -->
 							<%= form_for current_user do |f| %>
@@ -89,11 +100,19 @@
 								<% if current_user.current_courses.size() == 1 %> <!-- Array will now be empty -->
 									<%= f.hidden_field :current_courses, :multiple => true, :value => "" %>
 								<% end %>
-								<td>
+								
 									<div class = "current_course_button">
 										<%= f.submit "Replace with #{c_to_add.split(" ")[2..4].join(" ")}" %>
 									</div>
 								</td>
+								<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+									<td>
+										<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct_f}+#{instruct_l}&_action_search=Search")) %>
+										<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+										<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+										<%= grade = testing.split('<div class="grade">')[1][0..2] %>
+									</td>
+								<% end %>
 							<% end %>
 						<% end %>
 					<% elsif con_num > i %>

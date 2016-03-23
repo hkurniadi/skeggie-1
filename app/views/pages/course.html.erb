@@ -36,7 +36,12 @@
 <% if response.has_key?('instructor') %>
   <% response["instructor"].each do |instruct| %>
     <% if instruct["roleCode"] == "PI" %>
-      <p>Primary Instructor: <%= instruct["name"] %></p> 
+      <p>Primary Instructor: <%= instruct["name"] %></p>
+      <% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct["name"].split(" ")[0]}+#{instruct["name"].split(" ")[1]}&_action_search=Search")) %>
+      <% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+      <% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+      <% grade = testing.split('<div class="grade">')[1][0..2] %>
+      <li><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
     <% elsif insturct["roleCode"] == "SI" %>
       <p>Secondary Instructor: <%= instruct["name"] %></p>
     <% end %>
