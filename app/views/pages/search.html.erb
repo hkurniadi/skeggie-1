@@ -14,7 +14,7 @@
 <% wqb_is_nil = true %>
 <% results = 0 %> <!-- Will be used to print out message if there are no results -->
 
-<% if cur_url.split('/').count >=5 %>
+<% if cur_url.split('/').count >= 6 %>
   <% semester = cur_url.split('/')[4].split('%20')[0] %>
 	<% case semester %>
 	<% when "Spring" %>
@@ -26,36 +26,17 @@
 	<% end %>
   <% year = cur_url.split('/')[4].split('%20')[1] %>
   <% department = cur_url.split('/')[5].split('&')[0] %>
-  <% wqb = Array.new() %>
-  <% cur_url.split('/')[5].split('&').each_with_index do |val, i| %>
-  	<% next if i == 0 %> 
+  <% if cur_url.split('/').count == 7 %> 
   	<% wqb_is_nil = false %>
-  	<% if val.include? "%20" %>
-  		<% wqb.push((val.split("%20").join(" "))) %>
-  	<% else %>
-  		<% wqb.push(val) %>
-  	<% end %>
   <% end %>
 <% end %>
-<% if (cur_url.split('&').count > 1) %>
-	<% if (cur_url.split('/').count >=6) && ((cur_url[cur_url.split('&')[0].length()-6]=='/') || (cur_url[cur_url.split('&')[0].length()-3]=='W' )) %>
-		<% course_num = cur_url.split('/')[6] %>
-		<% sort = cur_url.split('/')[7].split('&')[0] %>
-		<% wqb = Array.new() %>
-		<% cur_url.split('/')[7].split('&').each_with_index do |val, i| %>
-			<% next if i == 0 %> 
-		  	<% wqb_is_nil = false %>
-		  	<% if val.include? "%20" %>
-		  		<% wqb.push((val.split("%20").join(" "))) %>
-		  	<% else %>
-		  		<% wqb.push(val) %>
-		  	<% end %>
-		<% end %>
-	<% end %>
-<% else %>
-	<% if (cur_url.split('/').count >=6) && ((cur_url[cur_url.length()-6]=='/') || (cur_url[cur_url.length()-3]=='W' )) %>
-		<% course_num = cur_url.split('/')[6] %>
-		<% sort = cur_url.split('/')[7].split('&')[0] %>
+
+<% if (cur_url.split('/').count >=8) %>
+	<% course_num = cur_url.split('/')[6] %>
+	<% cur_url.split('/') %>
+	<% sort = cur_url.split('/')[7].split('&')[0] %>
+	<% if (cur_url.split('/').count == 9 ) %>
+		<% wqb_is_nil = false %>
 	<% end %>
 <% end %>
 
@@ -176,174 +157,132 @@
 	</div>
 </form>
 
-
-
-<% if !department.nil? %>
-  <% if course_num.nil? or sort != "1" %> <!-- No Course Number is specified meaning we want all courses for the semester -->
-		<% for i in 0..3 %> <!-- Sometimes JSON response isn't true -->
-			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}") %>
-			<% if response.code == 200 %> <!-- Won't have error message -->
-				<% break %>
-			<% end %>
-		<% end %>
-  <% else %>
-		<% for i in 0..3 %>
-			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}") %>
-			<% if response.code == 200 %>
-				<% break %>
-			<% end %>
-		<% end %>
-  <% end %>
-	<% if response.kind_of?(Array) %> <!-- Checking if response is valid -->
-    <table class='search_results'>
+<% if !@course.blank? %>
+	<table class='search_results'>
     	<tr>
     		<th>Course</th>
     		<th>Title</th>
     		<th>Sections</th>
-    		<% if !wqb_is_nil %>
-    			<th>WQB</th>
-    		<% end %>
     		<th></th>
     		<% if sort == "1" %>
     			<th></th>
     			<th>Professor Rating</th>
     		<% end %>
+    		<% if !wqb_is_nil %>
+    			<th>WQB</th>
+    		<% end %>
     	</tr>
-    	<% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
-				<% response.each do |val| %>
-				<tr>
-					<% if wqb_is_nil %>
-						<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-						<td class = 'course_title'><%= val["title"] %></td>
-						<td class = 'course_link'><%= link_to("View Sections", "#{cur_url}/#{val["text"]}/1") %></td>
-						<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-						<% results += 1 %>
-					<% else %>
-						<% for i in 0..2 %>
-							<% wqb_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department.downcase}/#{val["text"].downcase}/") %>
-							<% if wqb_response.code == 200 %>
-								<% break %>
-							<% end %>
-						<% end %>
-						<% if wqb_response["designation"].blank? || wqb_response["designation"] == "N/A" %>
-							<% next %>
-						<% end %>
-						<% if (wqb - wqb_response["designation"].split('/')).count < wqb.count %>
-							<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-							<td class = 'course_title'><%= val["title"] %></td>
-							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("&")[0]}/#{val["text"]}/1") %></td>
-							<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-							<% results += 1 %>
-							<td class = "wqb_specs" ><%= wqb_response["designation"] %></td>
-						<% end %>
-					<% end %>
-        </tr>
-        <% end %>
-      <% else %>
-      			<% sort %>
-				<% case sort %>
-				<% when "1" %> 
-					<% response.each do |val| %>
-					<tr>
-						<% if wqb_is_nil %>
-							<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + val["text"] %></td>
-							<td class = 'course_title'><%= val["title"] %></td>
-							<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/").split('&')[0]}/#{val["text"]}" ) %></td>
-							<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
-							<% if cur_year <= year.to_i && cur_sem <= semi %>
-								<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: val["text"], type: val["sectionCode"], conflicted: ""} %>
-							<% end %>
-							<% results += 1 %>
-						<% else %>
-							<% for i in 0..2 %>
-								<% wqb_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department.downcase}/#{course_num.downcase}/") %>
-								<% if wqb_response.code == 200 %>
-									<% break %>
-								<% end %>
-							<% end %>
-							<% if wqb_response["designation"].blank? || wqb_response["designation"] == "N/A" %>
-								<% next %>
-							<% end %>
-							<% if (wqb - wqb_response["designation"].split('/')).count < wqb.count %>
-								<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + val["text"] %></td>
-								<td class = 'course_title'><%= val["title"] %></td>
-								<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/")}/#{val["text"]}" ) %></td>
-								<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
-								<% if cur_year <= year.to_i && cur_sem <= semi %>
-									<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: val["text"], type: val["sectionCode"], conflicted: ""} %>
-								<% end %>
-								<% results += 1 %>
-								<td class = "wqb_specs" ><%= wqb_response["designation"] %></td>
-							<% end %>
-						<% end %>
-					</tr>
-					<% end %>
-				<% when "2" %>
-					<% response.each_with_index do |val, i| %>
-						<% break if val["text"] >= course_num[0..2] %>
-						<tr>
-							<% if wqb_is_nil %>
-								<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-								<td class = 'course_title'><%= val["title"] %></td>
-								<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("&")[0].split("#{course_num}")[0]}#{val["text"]}/1") %></td>
-								<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-								<% results += 1 %>
-							<% else %>
-								<% for i in 0..2 %>
-									<% wqb_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department.downcase}/#{val["text"].downcase}/") %>
-									<% if wqb_response.code == 200 %>
-										<% break %>
-									<% end %>
-								<% end %>
-								<% if wqb_response["designation"].blank? || wqb_response["designation"] == "N/A" %>
-									<% next %>
-								<% end %>
-								<% if (wqb - wqb_response["designation"].split('/')).count < wqb.count %>
-									<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-									<td class = 'course_title'><%= val["title"] %></td>
-									<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("&")[0].split("#{course_num}")[0]}#{val["text"]}/1") %></td>
-									<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-									<% results += 1 %>
-									<td class = "wqb_specs" ><%= wqb_response["designation"] %></td>
-								<% end %>
-							<% end %>
-						</tr>
-					<% end %>
-				<% when "3" %>	
-     			<% response.each do |val| %>
-     				<% next if val["text"] <= course_num[0..2] %>
-						<tr>
-							<% if wqb_is_nil %>
-								<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-								<td class = 'course_title'><%= val["title"] %></td>
-								<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("&")[0].split("#{course_num}")[0]}#{val["text"]}/1") %></td>
-								<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-								<% results += 1 %>
-							<% else %>
-								<% for i in 0..2 %>
-									<% wqb_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department.downcase}/#{val["text"].downcase}/") %>
-									<% if wqb_response.code == 200 %>
-										<% break %>
-									<% end %>
-								<% end %>
-								<% if wqb_response["designation"].blank? || wqb_response["designation"] == "N/A" %>
-									<% next %>
-								<% end %>
-								<% if (wqb - wqb_response["designation"].split('/')).count < wqb.count %>
-									<td class = 'dep_cid'><%= "#{department.upcase} #{val["text"]}" %></td>
-									<td class = 'course_title'><%= val["title"] %></td>
-									<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("&")[0].split("#{course_num}")[0]}#{val["text"]}/1") %></td>
-									<%= render partial: "add_past_course", locals: {department: department, coursenum: val["text"] } %>
-									<% results += 1 %>
-									<td class = "wqb_specs" ><%= wqb_response["designation"] %></td>
-								<% end %>
-							<% end %>
-						</tr>
+   <% @course.each do |val| %> 
+			<% if !val.semesters.include?("#{semester} #{year}") %>
+				<% if val.semesters.include?("Not in #{semester} #{year}") %>
+					<% next %>
+				<% end %>
+				<% for i in 0..5 %>
+					<% res = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department}/#{val.coursenum}") %>
+					<% if res.code == 200 %>
+						<% break %>
 					<% end %>
 				<% end %>
+				<% if res["sections"] != [] %>
+					<% val.semesters.push("#{semester} #{year}") %>
+					<% val.save! %>
+				<% else %>
+					<% val.semesters.push("Not in #{semester} #{year}") %>
+					<% val.save! %>
+					<% next %>
+				<% end %>
+			<% end %>
+    	<% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
+					<% if wqb_is_nil %>
+						<tr>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+						 </tr>
+					<% else %>
+						<tr>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..5].join("/")}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+							<td class = "wqb_specs" ><%= val.wqb %></td>
+						</tr>
+					<% end %>
+      <% else %>
+				<% case sort %>
+				<% when "1" %>
+					<% for i in 0..5 %>
+						<% sec_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department}/#{val.coursenum}") %>
+						<% if sec_response.code == 200 %>
+							<% break %>
+						<% end %>
+					<% end %>
+					<% sec_response["sections"].each do |section| %>
+						<tr>
+							<% if wqb_is_nil %>
+							<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + section["number"] %></td>
+								<td class = 'course_title'><%= val.title %></td>
+								<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/").split('&')[0]}/#{section["number"]}" ) %></td>
+								<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
+								<% if cur_year <= year.to_i && cur_sem <= semi %>
+									<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: section["number"], type: section["sectionCode"], conflicted: ""} %>
+								<% end %>
+								<% results += 1 %>
+							<% else %>
+								<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + section["number"] %></td>
+								<td class = 'course_title'><%= val.title %></td>
+								<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-3].join("/")}/#{section["number"]}" ) %></td>
+								<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
+								<% if cur_year <= year.to_i && cur_sem <= semi %>
+									<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: section["number"], type: section["sectionCode"], conflicted: ""} %>
+								<% end %>
+								<% results += 1 %>
+								<td class = "wqb_specs" ><%= val.wqb %></td>
+							<% end %>
+						</tr>
+					<% end %>
+				<% when "2" %>
+					<tr>
+						<% if wqb_is_nil %>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-3].join("/")}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+						<% else %>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-4].join("/")}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+							<td class = "wqb_specs" ><%= val.wqb %></td>
+						<% end %>
+					</tr>
+				<% when "3" %>	
+					<tr>
+						<% if wqb_is_nil %>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-3].join("/")}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+						<% else %>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-4].join("/")}/#{val.coursenum}/1") %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+							<td class = "wqb_specs" ><%= val.wqb %></td>
+						<% end %>
+					</tr>
+				<% end %>
       <% end %>
-    </table>
   <% end %>
+	</table>
+
 	<% if results == 0 %>
 		<p id='no_results'>Sorry, there are no courses matching your query.</p>
 	<% end %>

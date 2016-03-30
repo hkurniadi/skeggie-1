@@ -19,7 +19,7 @@ function q_search()
 		}
 		//if (document.getElementById("search_term").value.split(" ")[1].length == 3 || (document.getElementById("search_term").value.split(" ")[1].length == 4 && document.getElementById("search_term").value.split(" ")[1][3] == "W")){
 		if (document.getElementById("search_term").value.split(" ")[1].length <= 4){
-			url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.toUpperCase().split(" ").join("/")+"/1";
+			url += "/" + semester + "%20" + year + "/" + document.getElementById("search_term").value.toLowerCase().split(" ").join("/")+"/1";
 		}
 		}
 		location.href = url;
@@ -39,23 +39,55 @@ function process()
   var getUrl = window.location;
 	var max = document.getElementById("coursenum").maxLength;
   var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-  var url= baseUrl + "/" + document.getElementById("semester").value + "/" + document.getElementById("department").value;
+  var url= baseUrl + "/" + document.getElementById("semester").value + "/" + document.getElementById("department").value.toLowerCase();
+	var wqb = false;
   
   if ((document.getElementById("coursenum").value != '') && (document.getElementById("coursenum").value.length <= max)) {
     url += "/" + document.getElementById("coursenum").value.toUpperCase() + "/" + document.getElementById("sortby").value;
     var tempCourseNum = document.getElementById("coursenum").value;
   }
   if (document.getElementById("wqb_0").checked == true) {
-  	url += "&Writing"
+  	url += "/Writing";
+		var wqb = true;
   }
   if (document.getElementById("wqb_1").checked == true) {
-  	url += "&Quantitative"
-  }if (document.getElementById("wqb_2").checked == true) {
-  	url += "&Breadth-Humanities"
-  }if (document.getElementById("wqb_3").checked == true) {
-  	url += "&Breadth-Science"
-  }if (document.getElementById("wqb_4").checked == true) {
-  	url += "&Breadth-Social Sciences"
+		if (wqb == false){
+			wqb = true
+			url += "/Quantitative"
+		}
+		else {
+			url += "&Quantitative";
+		}
+  }
+	if (document.getElementById("wqb_2").checked == true) {
+		if (wqb == false){
+			wqb = true
+			url += "/Breadth-Humanities";
+		}
+		else {
+			url += "&Breadth-Humanities";
+		}
+  	
+  }
+	if (document.getElementById("wqb_3").checked == true) {
+		if (wqb == false){
+			wqb = true
+			url += "/Breadth-Science";
+		}
+		else {
+			url += "&Breadth-Science";
+		}
+  	
+  }
+	if (document.getElementById("wqb_4").checked == true) {
+		if (wqb == false){
+			wqb = true
+			url += "/Breadth-Social_Sciences";
+		}
+		else {
+			url += "&Breadth-Social_Sciences";
+		}
+  	
   }
   location.href=url;
   return false;

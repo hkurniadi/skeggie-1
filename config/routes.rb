@@ -7,7 +7,9 @@ Rails.application.routes.draw do
 	get '/cart' => 'users#cart', as: :cart
   get '/search' => 'pages#search', as: :search
   get '/search/:semester/:subject' => 'pages#search'
+	get '/search/:semester/:subject/:wqb' => 'pages#search'
   get '/search/:semester/:subject/:coursenum/:sort' => 'pages#search'
+	get 'search/:semester/:subject/:coursenum/:sort/:wqb' => 'pages#search'
   get '/course/:semester/:subject/:coursenum/:section' => 'pages#course'
 	get '/schedule/:username' => 'users#schedule', as: :schedule
   get '/signup' => 'users#new', as: :signup

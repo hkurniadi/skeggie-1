@@ -59,16 +59,16 @@
 	<% end %>
 	<table style="layout: fixed">
 		<tr>
-			<th style = "width: 10%; text-align:center">Time</th>
-			<th style = "width: 18%; text-align:center">Monday</th>
-			<th style = "width: 18%; text-align:center">Tuesday</th>
-			<th style = "width: 18%; text-align:center">Wednesday</th>
-			<th style = "width: 18%; text-align:center">Thursday</th>
-			<th style = "width: 18%; text-align:center">Friday</th>
+			<th class="sched">Time</th>
+			<th class="schedlrg">Monday</th>
+			<th class="schedlrg">Tuesday</th>
+			<th class="schedlrg">Wednesday</th>
+			<th class="schedlrg">Thursday</th>
+			<th class="schedlrg">Friday</th>
 		</tr>
 		<% for i in 16..48 %>
 		<tr>
-			<td style="width: 10%; padding:5px; text-align:center ">
+			<td class="sched">
 				<% if i%2 == 0 %>
 			        <% if i >= 26 %>
     	                <%= ((i/2)-12).to_s + ":00" %>
@@ -85,22 +85,22 @@
 			</td>
 			<% for k in 1..5 %>
 			    <% if events[k-1].blank? %>
-			        <td style="width: 18%; border: 1px solid black;"> </td>
+			        <td class="schedlrg"> </td>
 			    <% else %>
     	            <% events[k-1].each do |course|%>
     	                <% c_split = course.split(", ") %>
     			        <% if i%2 != 0 %>
     			            <% if s_times[c_split[0].to_i][c_split[1].to_i] == ((i/2).to_s+ ":30")%>
-                                <td style="width: 18%; border:1px solid black; padding:5px"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                <td class="schedlrg"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
                             <% else %>
-                                <td style="width: 18%; border:1px solid black"></td>
+                                <td class="schedlrg"></td>
                             <% end %>
                         <% end %>
                         <% if i%2 == 0 %>
                             <% if ((s_times[c_split[0].to_i][c_split[1].to_i].split(":")[0].to_i) +1) == (i/2) %>
-                                 <td style="width: 18%; border:1px solid black; padding:5px"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                 <td class="schedlrg"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
                             <% else %>
-                                <td style="width: 18%; border:1px solid black"></td>
+                                <td class="schedlrg"></td>
                             <% end %>
                             
                         <% end %>
@@ -113,16 +113,16 @@
 <% else %>
     <table style="layout: fixed">
 		<tr>
-			<th style="width: 10%; text-align:center">Time</th>
-			<th style="width: 10%; text-align:center">Monday</th>
-			<th style="width: 10%; text-align:center">Tuesday</th>
-			<th style="width: 10%; text-align:center">Wednesday</th>
-			<th style="width: 10%; text-align:center">Thursday</th>
-			<th style="width: 10%; text-align:center">Friday</th>
+			<th class="sched">Time</th>
+			<th class="sched">Monday</th>
+			<th class="sched">Tuesday</th>
+			<th class="sched">Wednesday</th>
+			<th class="sched">Thursday</th>
+			<th class="sched">Friday</th>
 		</tr>
 		<% for i in 16..48 %>
 		<tr>
-			<td style="width: 10%; padding:5px; text-align:center">
+			<td class="sched">
 				<% if i%2 == 0 %>
 				  <% if i >= 26 %>
 						<%= ((i/2)-12).to_s + ":00" %>
@@ -137,11 +137,11 @@
 					<% end %>	
 				<% end %>
 			</td>
-			<td style="width: 18%; border:1px solid black"> </td>
-			<td style="width: 18%; border:1px solid black"> </td>
-			<td style="width: 18%; border:1px solid black"> </td>
-			<td style="width: 18%; border:1px solid black"> </td>
-			<td style="width: 18%; border:1px solid black"> </td>
+			<td class="schedlrg"> </td>
+			<td class="schedlrg"> </td>
+			<td class="schedlrg"> </td>
+			<td class="schedlrg"> </td>
+			<td class="schedlrg"> </td>
 		</tr>
 		<% end %>
 	</table>

@@ -41,7 +41,7 @@
       <% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
       <% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
       <% grade = testing.split('<div class="grade">')[1][0..2] %>
-      <li><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
+      <li class="prof_grade"><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
     <% elsif insturct["roleCode"] == "SI" %>
       <p>Secondary Instructor: <%= instruct["name"] %></p>
     <% end %>
