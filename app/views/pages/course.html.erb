@@ -6,6 +6,26 @@
   <% department = cururl.split('/')[5] %>
 <% end %>
 
+<% cur_url = request.original_url %> 
+<% cur_year = Date.today.year %> <!-- Will be used to check if course is from a past year -->
+<% cur_month = Date.today.month %> <!-- Will determine semester that is in session -->
+
+<% case cur_month %>
+<% when 1,2,3,4 %>
+	<% cur_sem = 1 %>
+<% when 5,6,7,8 %>
+	<% cur_sem = 2 %>
+<% else %>
+	<% cur_sem = 3 %>
+<% end %>
+<% case semester %>
+<% when "Spring" %>
+  <% sem_num = 1 %>
+<% when "Summer" %>
+  <% sem_num = 2 %>
+<% when "Fall" %>
+  <% sem_num = 3 %>
+<% end %>
 <% if cururl.split('/').count >=6 %>
   <% course_num = cururl.split('/')[6] %>
 <% end %>
@@ -14,9 +34,9 @@
   <% course_section = cururl.split('/')[7] %>
 <% end %>
 
-<% for i in 0..10 %>
+<% for i in 0..5 %>
 	<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{course_section}") %>
-	<% if response.count != 1 %>
+	<% if response.code == 200 %>
 		<% break %>
 	<% end %>
 <% end %>
@@ -30,9 +50,9 @@
     <%= link_to("Click here", "#{cururl[0..(url_len-3)]}00") %>
   </p>
 <% end %>
-
-<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: course_section, type: response["courseSchedule"][0]["sectionCode"], conflicted: ""} %>
-
+<% if cur_sem == sem_num && cur_year == year %>
+  <%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: course_section, type: response["courseSchedule"][0]["sectionCode"], conflicted: ""} %>
+<% end %>
 <% if response.has_key?('instructor') %>
   <% response["instructor"].each do |instruct| %>
     <% if instruct["roleCode"] == "PI" %>

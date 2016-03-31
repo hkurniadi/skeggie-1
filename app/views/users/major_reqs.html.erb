@@ -1,0 +1,27 @@
+<% require 'json' %>
+<% if logged_in? && current_user == @user %>
+    <% for i in 0..5 %>
+        <% res = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?2016/spring/programs/#{@user.major}") %>
+        <% if res.code == 200 %>
+            <% break %>
+        <% end %>
+    <% end %>
+    
+    <%= raw res["requirements"][1]["requirements"] %>
+    <ul>
+    <% res["requirements"][1]["requirements"].drop(1).each do |val| %>
+        <% if val.has_key?("description") %>
+            <br/><strong><%= val["description"] %></strong>
+        <% else %>
+            <li><%= "#{val["value"].split('/').join(" ").upcase} #{val["courseTitle"]}"%></li>
+        <% end %>
+    <% end %>
+    </ul>
+    <% new_arr = Array.new() %>
+    <%= new_arr %>
+    <%= new_arr[0].blank? %>
+<% else %>
+    <script type="text/javascript">
+    window.location.href="/" 
+  </script>
+<% end %>

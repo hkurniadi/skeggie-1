@@ -48,6 +48,10 @@ class UsersController < ApplicationController
 		@user = User.all
 	end
 	
+	def major_reqs
+	  @user = User.find_by_username(params[:username])
+	end
+	
   private
   
   def user_params

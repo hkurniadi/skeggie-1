@@ -7,41 +7,42 @@
     <% event = Array.new() %>
     <% events[i] = event %>
 <% end %>
-
-<% @current_courses.each_with_index do |curr, i| %>
-	<% for j in 0..10 %> 
-		<% responses[i] = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{curr.split(" ")[0]}/#{curr.split(" ")[1]}/#{curr.split(" ")[2..3].join("/")}/#{curr.split(" ")[4]}") %>
-		<% if responses[i].count != 1 %> <!-- Won't have error message -->
-			<% break %>
-		<% elsif responses[i].count == 1 && !responses[i].has_key?('errorMessage') %> <!-- Just one result, but not an error -->
-			<% break %>
-		<% end %>
-	<% end %>
-	<% days[i] = Array.new(responses[i]["courseSchedule"].length) %>
-	<% s_times[i] = Array.new(responses[i]["courseSchedule"].length) %>
-	<% e_times[i] = Array.new(responses[i]["courseSchedule"].length) %>
-	<% days[i].each_with_index do |day, j| %>
-		<% day = responses[i]["courseSchedule"][j]["days"].split(", ") %>
-		<% day.each_with_index do |w_day, k| %>
-			<% w_set = case w_day %>
-			<% when "Mo" %> 
-				<% 1 %>
-			<% when "Tu" %>
-				<% 2 %>
-			<% when "We" %>
-				<% 3 %>
-			<% when "Th" %>
-				<% 4 %>
-			<% when "Fr" %>
-				<% 5 %>
+<% if !@current_courses[0].blank? %>
+	<% @current_courses.each_with_index do |curr, i| %>
+		<% for j in 0..5 %> 
+			<% responses[i] = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{curr.split(" ")[0]}/#{curr.split(" ")[1]}/#{curr.split(" ")[2..3].join("/")}/#{curr.split(" ")[4]}") %>
+			<% if responses[i].count != 1 %> <!-- Won't have error message -->
+				<% break %>
+			<% elsif responses[i].count == 1 && !responses[i].has_key?('errorMessage') %> <!-- Just one result, but not an error -->
+				<% break %>
 			<% end %>
-			<% day[k] = w_set %>
 		<% end %>
-		<% days[i][j] = day %>
-		<% s_times[i][j]= responses[i]["courseSchedule"][j]["startTime"] %>
-		<% e_times[i][j]= responses[i]["courseSchedule"][j]["endTime"] %>
+		<% days[i] = Array.new(responses[i]["courseSchedule"].length) %>
+		<% s_times[i] = Array.new(responses[i]["courseSchedule"].length) %>
+		<% e_times[i] = Array.new(responses[i]["courseSchedule"].length) %>
+		<% days[i].each_with_index do |day, j| %>
+			<% day = responses[i]["courseSchedule"][j]["days"].split(", ") %>
+			<% day.each_with_index do |w_day, k| %>
+				<% w_set = case w_day %>
+				<% when "Mo" %> 
+					<% 1 %>
+				<% when "Tu" %>
+					<% 2 %>
+				<% when "We" %>
+					<% 3 %>
+				<% when "Th" %>
+					<% 4 %>
+				<% when "Fr" %>
+					<% 5 %>
+				<% end %>
+				<% day[k] = w_set %>
+			<% end %>
+			<% days[i][j] = day %>
+			<% s_times[i][j]= responses[i]["courseSchedule"][j]["startTime"] %>
+			<% e_times[i][j]= responses[i]["courseSchedule"][j]["endTime"] %>
+		<% end %>
+	
 	<% end %>
-
 <% end %>
 <% if !days[0].blank? %>
     <% @current_courses.each_with_index do |curr, j| %>
@@ -91,14 +92,14 @@
     	                <% c_split = course.split(", ") %>
     			        <% if i%2 != 0 %>
     			            <% if s_times[c_split[0].to_i][c_split[1].to_i] == ((i/2).to_s+ ":30")%>
-                                <td class="schedlrg"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
                             <% else %>
                                 <td class="schedlrg"></td>
                             <% end %>
                         <% end %>
                         <% if i%2 == 0 %>
                             <% if ((s_times[c_split[0].to_i][c_split[1].to_i].split(":")[0].to_i) +1) == (i/2) %>
-                                 <td class="schedlrg"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                 <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
                             <% else %>
                                 <td class="schedlrg"></td>
                             <% end %>

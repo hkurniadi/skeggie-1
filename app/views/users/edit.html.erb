@@ -10,47 +10,99 @@
   </div>
 <% end %>
 
-<% if flash[:alert] %>  
-  <div class="notice"><%= flash[:alert] %></div>
-<% end %>
-<% if current_user == @user %>
-  <%= form_for @user, class: "form-group" do |f| %>
-    <p>
-      <%= f.label :avatar, "Avatar: " %><br>
-    	<select class = "form-control" name = "avatar" id = "avatarid" form = "avatarform">
-      	<option value = "1" selected>1</option>
-      	<option value = "2">2</option>
-      	<option value = "3">3</option>
-      	<option value = "4">4</option>
-      	<option value = "5">5</option>
-      </select>
-    </p>
-    
-    <p>
-      <%= f.label :first_name, "First Name: " %><br>
-      <%= f.text_field :first_name, class: "form-control" %>
-    </p>
-
-    <p>
-      <%= f.label :last_name, "Last Name: " %><br>
-      <%= f.text_field :last_name, class: "form-control" %>
-    </p>
-
-    <!--  Will be used to caculate travel times in scheduling system.-->
-    <p>
-      <%= f.label :address, "Address: " %><br>
-      <%= f.text_field :address, class: "form-control" %>
-    </p>
-
-    <!-- Will be used to check course history against major requirements-->
-    <p>
-      <%= f.label :major, "Major: " %><br>
-      <%= f.text_field :major, class: "form-control" %>
-    </p>
-    <p>
-      <%= f.submit "Update", class: "btn btn-default" %>
-    </p>
+<div class="panel panel-default">
+  <% if flash[:alert] %>  
+    <div class="notice"><%= flash[:alert] %></div>
   <% end %>
+  <% if current_user == @user %>
+    <%= form_for @user, class: "form-group" do |f| %>
+      <p>
+        <%= f.label :avatar, "Avatar: " %><br>
+      	<select class = "form-control" name = "avatar" id = "avatarid" form = "avatarform">
+        	<option value = "1" selected>1</option>
+        	<option value = "2">2</option>
+        	<option value = "3">3</option>
+        	<option value = "4">4</option>
+        	<option value = "5">5</option>
+        </select>
+      </p>
+      
+      <p>
+        <%= f.label :first_name, "First Name: " %><br>
+        <%= f.text_field :first_name, class: "form-control" %>
+      </p>
+  
+      <p>
+        <%= f.label :last_name, "Last Name: " %><br>
+        <%= f.text_field :last_name, class: "form-control" %>
+      </p>
+  
+      <!--  Will be used to caculate travel times in scheduling system.-->
+      <p>
+        <%= f.label :address, "Address: " %><br>
+        <%= f.text_field :address, class: "form-control" %>
+      </p>
+  
+      <!-- Will be used to check course history against major requirements-->
+      <p>
+        <%= f.label :major, "Major: " %><br>
+        <%= f.select :major, options_for_select([
+          ['Actuarial Science', 'actuarial-science/major/bachelor-of-science'],
+          ['Anthropology', 'anthropology/major/bachelor-of-arts'],
+          ['Applied Physics', 'applied-physics/major/bachelor-of-science'],
+          ['Archaeology','archaeology/major/bachelor-of-arts'],
+          ['Behavioural Neuroscience','behavioural-neuroscience/major/bachelor-of-science'],
+          ['Biological Physics','biological-physics/major/bachelor-of-science'],
+          ['Biological Sciences', 'biological-sciences/major/bachelor-of-science'],
+          ['Biomedical Physiology', 'biomedical-physiology/major/bachelor-of-science'],
+          ['Business', 'business/major/bachelor-of-business-administration'],
+          ['Cognitive Science', 'cognitive-science/major/bachelor-of-arts'],
+          ['Communication','communication/major/bachelor-of-arts'],
+          ['Computing Science','computing-science/major/bachelor-of-science-or-bachelor-of-arts'],
+          ['Criminology','criminology/major/bachelor-of-arts'],
+          ['Dance', 'dance/major/bachelor-of-fine-arts'],
+          ['Earth Sciences', 'earth-sciences/major/bachelor-of-science'],
+          ['Economics', 'economics/major/bachelor-of-arts'],
+          ['Engineering Science', 'engineering-science-computer-engineering-option/major/bachelor-of-applied-science'],
+          ['English', 'english/major/bachelor-of-arts'],
+          ['Environmental Science', 'environmental-science/major/bachelor-of-science'],
+          ['Film', 'film/major/bachelor-of-fine-arts'],
+          ['First Nations Studies', 'first-nations-studies/major/bachelor-of-arts'],
+          ['French', 'french/major/bachelor-of-arts'],
+          ['Gender Sexuality and Women\'s Studies', 'gender-sexuality-and-women-8217-s-studies/major/bachelor-of-arts'],
+          ['Geography', 'geography/major/bachelor-of-arts'],
+          ['Health Sciences (B.A)', 'health-sciences/major/bachelor-of-arts'],
+          ['Health Sciences (B.Sc)', 'health-sciences/major/bachelor-of-science'],
+          ['History', 'history/major/bachelor-of-arts'],
+          ['Humanities', 'humanities/major/bachelor-of-arts'],
+          ['Interactive Arts and Technology (B.A)', 'interactive-arts-and-technology/major/bachelor-of-arts'],
+          ['Interactive Arts and Technology (B.Sc)', 'interactive-arts-and-technology/major/bachelor-of-science'],
+          ['International Studies', 'international-studies/major/bachelor-of-arts'],
+          ['Kinesiology', 'kinesiology/major/bachelor-of-science'],
+          ['Linguistics', 'linguistics/major/bachelor-of-arts'],
+          ['Management and Systems Science', 'management-and-systems-science/major/bachelor-of-science'],
+          ['Mathematics', 'mathematics/major/bachelor-of-science'],
+          ['Mechatronic Systems Engineering', 'mechatronic-systems-engineering/major/bachelor-of-applied-science'],
+          ['Molecular Biology and Biochemistry', 'molecular-biology-and-biochemistry/major/bachelor-of-science'],
+          ['Music', 'music/major/bachelor-of-fine-arts'],
+          ['Operations Research', 'operations-research/major/bachelor-of-science'],
+          ['Philosophy', 'philosophy/major/bachelor-of-arts'],
+          ['Physical Geography', 'physical-geography/major/bachelor-of-science'],
+          ['Physics', 'physics/major/bachelor-of-science'],
+          ['Political Science', 'political-science/major/bachelor-of-arts'],
+          ['Psychology', 'psychology-/major/bachelor-of-arts'],
+          ['Sociology', 'sociology/major/bachelor-of-arts'],
+          ['Statistics', 'statistics/major/bachelor-of-science'],
+          ['Theatre Production and Design Stream', 'theatre-production-and-design-stream-/major/bachelor-of-fine-arts'],
+          ['Visual Art', 'visual-art/major/bachelor-of-fine-arts'],
+          ['World Literature', 'world-literature/major/bachelor-of-arts']
+          ], @user.major), class: "form-control" %>
+      </p>
+      <p>
+        <%= f.submit "Update", class: "btn btn-default" %>
+      </p>
+  <% end %>
+</div>
 
 <% else %>
   <script type="text/javascript">

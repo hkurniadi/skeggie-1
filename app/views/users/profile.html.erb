@@ -12,9 +12,11 @@
 					<% end %>
 				
 					<% if !@user.major.nil? %>
-				  		<p><strong>Major:</strong> <%= @user.major %> </p>
+				  		<p><strong>Major:</strong> <%= @user.major.split('/')[0].split('-').map(&:capitalize).join(' ') %> </p>
 					<% end %>
-					<p><%= link_to("Edit Profile", edit_user_path) %></p>
+					<% if logged_in? && current_user == @user %>
+						<p><%= link_to("Edit Profile", edit_user_path) %></p>
+					<% end %>
 			  </div>
 			</div>
 		</div>

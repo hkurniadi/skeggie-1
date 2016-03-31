@@ -3,7 +3,7 @@
 <% end %>
 
 <% if !logged_in? %>
-  <%= form_for(:session, url: login_path, class: "form-group") do |f| %>
+  <%= form_for(:session, url: login_path, class: "form-group ") do |f| %>
   <p>
     <%= f.label :username, "Username: " %><br>
     <%= f.text_field :username, class: "form-control" %>

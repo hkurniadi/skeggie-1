@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 	get '/profile/search' => 'users#profile_search', as: :p_search
 	get '/profile/search/:search_by/:search_term' => 'users#profile_search'
 	get '/profile/:username' => 'users#profile', as: :profile
+	get '/profile/:username/major' => 'users#major_reqs', as: :user_major
 	get '/users/:username/edit' => 'users#edit', as: :edit_user
 	get '/cart' => 'users#cart', as: :cart
   get '/search' => 'pages#search', as: :search
