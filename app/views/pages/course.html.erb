@@ -7,7 +7,7 @@
 <% end %>
 
 <% cur_url = request.original_url %> 
-<% cur_year = Date.today.year %> <!-- Will be used to check if course is from a past year -->
+<% cur_year = Date.today.year.to_s %> <!-- Will be used to check if course is from a past year -->
 <% cur_month = Date.today.month %> <!-- Will determine semester that is in session -->
 
 <% case cur_month %>
@@ -50,6 +50,7 @@
     <%= link_to("Click here", "#{cururl[0..(url_len-3)]}00") %>
   </p>
 <% end %>
+
 <% if cur_sem == sem_num && cur_year == year %>
   <%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: course_section, type: response["courseSchedule"][0]["sectionCode"], conflicted: ""} %>
 <% end %>
@@ -57,11 +58,13 @@
   <% response["instructor"].each do |instruct| %>
     <% if instruct["roleCode"] == "PI" %>
       <p>Primary Instructor: <%= instruct["name"] %></p>
-      <% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct["name"].split(" ")[0]}+#{instruct["name"].split(" ")[1]}&_action_search=Search")) %>
-      <% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
-      <% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
-      <% grade = testing.split('<div class="grade">')[1][0..2] %>
-      <li class="prof_grade"><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
+      <% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=1482&query=#{instruct["name"].split(" ")[0]}+#{instruct["name"].split(" ")[1]}&_action_search=Search")) %>
+      <% if test.include?('<li class="listing PROFESSOR">') %>
+        <% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+				<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+				<% grade = testing.split('<div class="grade">')[1][0..2] %>
+				<li class="prof_grade"><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
+      <% end %>
     <% elsif insturct["roleCode"] == "SI" %>
       <p>Secondary Instructor: <%= instruct["name"] %></p>
     <% end %>
@@ -161,7 +164,7 @@
 
 <% if info.has_key?('courseDetails') %>
   <h2>Details: </h2>
-  <p><%= sanitize "#{info["courseDetails"]}"%></p>
+  <p><%= raw "#{info["courseDetails"]}"%></p>
 <% end %>
 
 <% if info.has_key?('description') %>
@@ -194,7 +197,7 @@
   <ol>
     <% response["requiredText"].each do |textB| %>
       <li>
-        <%= sanitize "#{textB["details"]}" %> <br>
+        <%= strip_tags("#{textB["details"]}") %> <br>
         <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
           <% if textB["isbn"].include? "-" %>
             <% isbn_arr = textB["isbn"].split('-') %>
@@ -218,7 +221,7 @@
   <ol>
     <% response["recommendedText"].each do |textB| %>
       <li>
-        <%= sanitize "#{textB["details"]}" %> <br>
+        <%= raw "#{textB["details"]}" %> <br>
         <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
           <% if textB["isbn"].include? "-" %>
             <% isbn_arr = textB["isbn"].split('-') %>

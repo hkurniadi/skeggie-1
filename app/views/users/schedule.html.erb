@@ -92,14 +92,14 @@
     	                <% c_split = course.split(", ") %>
     			        <% if i%2 != 0 %>
     			            <% if s_times[c_split[0].to_i][c_split[1].to_i] == ((i/2).to_s+ ":30")%>
-                                <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ").upcase %></td>
                             <% else %>
                                 <td class="schedlrg"></td>
                             <% end %>
                         <% end %>
                         <% if i%2 == 0 %>
                             <% if ((s_times[c_split[0].to_i][c_split[1].to_i].split(":")[0].to_i) +1) == (i/2) %>
-                                 <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ") %></td>
+                                 <td class="schedlrg bg-success"><%= @current_courses[c_split[0].to_i].split(" ")[2..4].join(" ").upcase %></td>
                             <% else %>
                                 <td class="schedlrg"></td>
                             <% end %>

@@ -4,7 +4,7 @@
 			<% c_split = c.split(" ") %>
 			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_split[0]}/#{c_split[1]}/#{c_split[2]}/#{c_split[3]}/#{c_split[4]}") %>
 			<li>
-				<%= c_split[2..-2].join(" ") %>
+				<%= c_split[2..-2].join(" ").upcase %>
 				<%= render partial: "/pages/add_current_course", locals: {year: c_split[0], semester: c_split[1], department: c_split[2], course_num: c_split[3], section: c_split[4], type: c_split[5], conflicted: ""} %>
 				<% response["courseSchedule"].each do |lec_time| %> <!-- Lectures can be in different rooms and at different times on different days -->
 					<ul>

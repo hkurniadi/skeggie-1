@@ -186,7 +186,7 @@
 	<% end %>
 <% end %>
 
-<% if !@course.blank? %>
+<% if !@course.blank? && !c_in_sem.blank? %>
 	<table class='search_results'>
     	<tr>
     		<th>Course</th>
@@ -231,7 +231,7 @@
 						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/")}/#{section["number"]}" ) %></td>
 						<td class = "wqb_specs" ><%= val.wqb %></td>
 						<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
-						<% if cur_year <= year.to_i && cur_sem <= semi %>
+						<% if cur_year <= year.to_i && cur_sem <= semi && section["number"][0]%>
 							<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: section["number"], type: section["sectionCode"], conflicted: ""} %>
 						<% end %>
 						<% results += 1 %>

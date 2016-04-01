@@ -6,20 +6,148 @@
             <% break %>
         <% end %>
     <% end %>
-    
-    <%= raw res["requirements"][1]["requirements"] %>
+    <h2><%= "Major: #{@user.major.split('/')[0].split('-').map(&:capitalize).join(' ')}" %></h2>
+    <% conc = false %>
+    <% raw res["requirements"] %><br/>
     <ul>
-    <% res["requirements"][1]["requirements"].drop(1).each do |val| %>
-        <% if val.has_key?("description") %>
-            <br/><strong><%= val["description"] %></strong>
-        <% else %>
-            <li><%= "#{val["value"].split('/').join(" ").upcase} #{val["courseTitle"]}"%></li>
+    <% res["requirements"].each do |val| %>
+        
+        <% if !val.has_key?("title") %>
+            <li><%=val["requirements"][0]["description"]%></li>
+            <% next %>
+        <% end %>
+        <% if val["title"].include?("Stream") && val["title"] != "Streams" %>
+            <strong><li><%=val["title"] %></li></strong>
+        <% end %>
+        <% if (val["title"] == "Writing, Quantitative, and Breadth Requirements" || val["title"].include?("Faculty")) %>
+            <% conc = false %>
+        <% elsif (val["title"] == "Area of Concentration" || conc) %>
+            <li><strong><%= raw val["title"] %></strong></li>
+            <% if !conc %>
+                <% conc = true %>
+                
+            <% end %>
+            <% if val.has_key?("requirements") %>
+                <ul>
+                    <% val["requirements"].each_with_index do |cur, i| %>
+                        <% if val["requirements"][i-1].has_key?("description") && 
+                            cur.has_key?("courseTitle") %>
+                            <ul><li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                            #{cur["courseTitle"]}"%>
+                            <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                        <% elsif cur.has_key?("courseTitle") %>
+                            <li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                            #{cur["courseTitle"]}"%>
+                            <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                        <% elsif cur.has_key?("description") %>
+                            <% if i != 0 && val["requirements"][i-1].has_key?("courseTitle") %>
+                                </ul>
+                            <% end %>
+                            <li><strong><%= raw strip_tags(cur["description"]) %></strong></li>
+                        <% end %>
+                        <% if i == (val["requirements"].count() - 1) && cur.has_key?("courseTitle")  %>
+                                </ul>
+                        <% end %>
+                    <% end %>
+                </ul>
+            <% end %>
+            <% next %>
+        <% elsif (val["title"] == "Concentrations" || val["title"] == "Streams") %>
+            <li><strong><%= raw val["title"] %></strong></li>
+            <% if !conc %>
+                <% conc = true %>
+                
+            <% end %>
+            <% if val.has_key?("requirements") %>
+                <ul>
+                    <% val["requirements"].each_with_index do |cur, i| %>
+                        <% if val["requirements"][i-1].has_key?("description") && 
+                            cur.has_key?("courseTitle") %>
+                            <ul><li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                            #{cur["courseTitle"]}"%>
+                            <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                        <% elsif cur.has_key?("courseTitle") %>
+                            <li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                            #{cur["courseTitle"]}"%>
+                            <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                        <% elsif cur.has_key?("description") %>
+                            <% if i != 0 && val["requirements"][i-1].has_key?("courseTitle") %>
+                                </ul>
+                            <% end %>
+                            <li><strong><%= raw strip_tags(cur["description"]) %></strong></li>
+                        <% end %>
+                        <% if i == (val["requirements"].count() - 1) && cur.has_key?("courseTitle")  %>
+                                </ul>
+                        <% end %>
+                    <% end %>
+                </ul>
+            <% end %>
+            <% next %>
+        <% end %>
+        <% case val["title"] %>
+            <% when "Writing, Quantitative, and Breadth Requirements" %>
+                <li><strong><%= raw val["title"] %></strong></li>
+                <%= raw strip_links(val["description"]) %>
+            <% when /Table/, /Groupings$/ %>
+                <li><strong><%= raw val["title"] %></strong></li>
+                <table>
+                    <caption><%=val["title"]%></caption>
+                    <% val["requirements"].each_with_index do |cur, i| %>
+                        <% if cur.has_key?("description") %>
+                            <tr>
+                                <th><%=cur["description"]%></th>
+                                <th></th>
+                            </tr>
+                            
+                        <% else %>
+                            <tr><td><%= "#{cur["value"].split('/').join(" ").upcase}: 
+                                #{cur["courseTitle"]}"%>
+                                <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></td></tr>
+                        <% end %>
+                    <% end %>  
+                </table>
+            <% when /Requirement/i, /Credential/i, /Approval/i, /Areas/i, /Courses$/i, 
+                    /Stream/i, /Electives/i, /Concentration$/, /Declaration/, 
+                    /Continuance/, /Continuation/, /Group/, /Program/,
+                    /Co-op/, /Selection$/, "Psychology and Statistics",
+                    "Computing Recommendation", "Study Abroad"%>
+                <li><strong><%= raw val["title"] %></strong></li>
+                <% if val.has_key?("requirements") %>
+                    <ul>
+                        <% val["requirements"].each_with_index do |cur, i| %>
+                            <% if val["requirements"][i-1].has_key?("description") && 
+                                cur.has_key?("courseTitle") %>
+                                <ul><li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                                #{cur["courseTitle"]}"%>
+                                <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                            <% elsif cur.has_key?("courseTitle") %>
+                                <li><%="#{cur["value"].split('/').join(" ").upcase}: 
+                                #{cur["courseTitle"]}"%>
+                                <%= render partial: "/pages/add_past_course", 
+                            locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+                            <% elsif cur.has_key?("description") %>
+                                <% if i != 0 && val["requirements"][i-1].has_key?("courseTitle") %>
+                                    </ul>
+                                <% end %>
+                                <li><strong><%= raw strip_tags(cur["description"]) %></strong></li>
+                            <% end %>
+                            <% if i == (val["requirements"].count() - 1) && cur.has_key?("courseTitle")  %>
+                                    </ul>
+                            <% end %>
+                        <% end %>
+                    </ul>
+                <% else %> 
+                    <ul><li><%= raw strip_links(val["description"]) %></li></ul>
+                <% end %>
         <% end %>
     <% end %>
     </ul>
-    <% new_arr = Array.new() %>
-    <%= new_arr %>
-    <%= new_arr[0].blank? %>
 <% else %>
     <script type="text/javascript">
     window.location.href="/" 
