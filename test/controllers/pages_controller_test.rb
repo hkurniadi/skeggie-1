@@ -1,15 +1,37 @@
 require 'test_helper'
 
 class PagesControllerTest < ActionController::TestCase
+	
 	test "should return search" do
 		get(:search) 
 		assert_response :success
 	end 
 	
+	test "should return no results" do
+		get(:search, {:semester => "Spring 2016", :subject => "acma"})
+		assert_response :success
+		assert_select 'p#no_results'
+	end
+	
+	test "nav bar should be different depending on log in status" do
+		get(:index)
+		assert_response :success
+		assert_select 'li', 6 ## 6 List items in nav bar
+		assert_select 'a', 'Login'
+		
+		cody = users(:cody)
+		get(:index, nil, {'user_id' => cody.id})
+		assert_response :success
+		assert_select 'li', 10 ## 4 new list items in nav bar
+		assert_select 'a', 'Log out'
+		assert_select 'a', 'Profile'
+		assert_select 'a', 'My Schedule'
+	end
+	
 	test "should contain list of courses" do
 		get(:search, {:semester => "Spring 2016", :subject => "cmpt"})
 		assert_select 'tr'
-		assert_select 'td', 'CMPT 276'
+		assert_select 'td.dep_cid', 'CMPT 276'
 	end
 	
 	test "search should link to course sections" do

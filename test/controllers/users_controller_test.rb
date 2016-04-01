@@ -7,6 +7,16 @@ class UsersControllerTest < ActionController::TestCase
 		assert_response :success
 	end
 	
+	test "should return signup page" do
+		get(:new)
+		assert_response :success
+	end
+	
+	test "should redirect from signup page if already logged in" do
+		cody = users(:cody)
+		get(:new, nil, {'user_id' => cody.id})
+		assert_response :redirect
+	end
 	
 	test "should return profile search with params" do
 		get(:profile_search, {:search_by => "1", :search_term => "Test"})
@@ -63,6 +73,17 @@ class UsersControllerTest < ActionController::TestCase
 		assert_select "form input[type=submit][name=commit][value='Remove Friend']"
 	end
 	
+	test "should have list of friends" do
+		cody = users(:cody)
+		scott = users(:scott)
+		get(:profile, {:username => cody.username}, {'user_id' => cody.id})
+		assert_select 'a', {count: 0, text: 'View Profile'}
+		cody.friend_ids.push(scott.id)
+		cody.save
+		get(:profile, {:username => cody.username}, {'user_id' => cody.id})
+		assert_select 'a', {count: 1, text: 'View Profile'}
+	end
+	
 	test "should return schedule page with no events" do
 		cody = users(:cody)
 		get(:schedule, {:username => "Cody"}, {'user_id' => cody.id})
@@ -103,5 +124,18 @@ class UsersControllerTest < ActionController::TestCase
 		assert_select 'li', 12 ## 10 In nav bar
 		assert_select 'ul', 4 ## 3 In nav bar
 		assert_select "form input[type=submit][name=commit][value='Remove from Cart']"
+	end
+	
+	test "should have edit button" do
+		cody = users(:cody)
+		get(:profile, {:username => cody.username}, {'user_id' => cody.id})
+		assert_select 'a', 'Edit Profile'
+	end
+	
+	test "should not have edit button" do
+		cody = users(:cody)
+		scott = users(:scott)
+		get(:profile, {:username => scott.username}, {'user_id' => cody.id})
+		assert_select 'a', {count:0, text: 'Edit Profile'} 
 	end
 end

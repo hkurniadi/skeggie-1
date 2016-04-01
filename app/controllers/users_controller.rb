@@ -35,7 +35,11 @@ class UsersController < ApplicationController
   end
   
   def new
-    @user = User.new
+    if !session[:user_id].nil?
+      redirect_to :root
+    else
+      @user = User.new
+    end
   end
   
   def create
@@ -64,7 +68,11 @@ class UsersController < ApplicationController
 	end
 	
 	def major_reqs
-	  @user = User.find_by_username(params[:username])
+	  if session[:user_id].nil?
+	    redirect_to :root
+	  else
+	    @user = User.find(session[:user_id])
+	  end
 	end
 	
   private

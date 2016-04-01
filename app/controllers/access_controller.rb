@@ -1,6 +1,8 @@
 class AccessController < ApplicationController
   def login
-    
+    if !session[:user_id].nil?
+      redirect_to :root
+    end
   end
   
   def attempt_login
