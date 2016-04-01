@@ -1,0 +1,23 @@
+cmpt276:
+    id: 1
+    department: "cmpt"
+    coursenum: "276"
+    semesters: ["Spring 2016"]
+    wqb: "N/A"
+    title: "Introduction to Software Engineering"
+    
+cmpt322w:
+    id: 2
+    department: "cmpt"
+    coursenum: "322w"
+    semesters: ["Spring 2016"]
+    wqb: "Writing"
+    title: "Professional Responsibility and Ethics"
+
+cmpt376w:
+    id: 3
+    department: "cmpt"
+    coursenum: "376w"
+    semesters: ["Spring 2016"]
+    wqb: "Writing"
+    title: "Technical Writing and Group Dynamics"

@@ -1,7 +1,12 @@
 class UsersController < ApplicationController
   
   def profile
-		@user = User.find_by_username(params[:username])
+		
+		if !User.exists?(username: params[:username])
+		  redirect_to :root
+		else
+		  @user = User.find_by_username(params[:username])
+		end
   end
   
   def show
@@ -9,7 +14,15 @@ class UsersController < ApplicationController
   end
   
   def edit
-		@user = User.find_by_username(params[:username])
+    
+    if !User.exists?(username: params[:username])
+      redirect_to :root
+    else
+      @user = User.find_by_username(params[:username])
+      if !(session[:user_id] == @user.id)
+        redirect_to :root
+      end
+    end
   end
   
   def update

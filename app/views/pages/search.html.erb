@@ -164,12 +164,11 @@
 	<% end %>
 	<% res = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester.downcase}/#{department}") %>
 	<% if res.code == 200 %>
-		<% res = res.map(&:first).map{|a| a[1][0..2]} %>
+		<% res = res.map(&:first).map{|a| a[1][0..-1].downcase} %>
 		<% break %>
 	<% end %>
 <% end %>
 <% count = 0 %>
-
 <% c_in_sem = @course.select { |val| res.include?(val.coursenum)} %>
 <% c_not_in_sem = @course.select { |val| !res.include?(val.coursenum)} %>
 <% c_in_sem.each do |val| %>

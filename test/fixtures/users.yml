@@ -4,8 +4,16 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one: {}
+cody: 
+    id: 1
+    username: "Cody"
+    password_digest: <%=User.digest('password')%>
+    major: "computing-science/major/bachelor-of-science-or-bachelor-of-arts"
+
 # column: value
 #
-two: {}
+scott: 
+    id: 2
+    username: "Scott"
+    password_digest: <%=User.digest('testing')%>
 #  column: value
