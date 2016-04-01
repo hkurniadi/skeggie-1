@@ -2,7 +2,7 @@ cmpt276:
     id: 1
     department: "cmpt"
     coursenum: "276"
-    semesters: ["Spring 2016"]
+    semesters: ["Spring 2016", "Fall 2015"]
     wqb: "N/A"
     title: "Introduction to Software Engineering"
     
@@ -21,3 +21,19 @@ cmpt376w:
     semesters: ["Spring 2016"]
     wqb: "Writing"
     title: "Technical Writing and Group Dynamics"
+    
+cmpt361:
+    id: 4
+    department: "cmpt"
+    coursenum: "361"
+    semesters: ["Spring 2016"]
+    wqb: "N/A"
+    title: "Introduction to Computer Graphics"
+    
+cmpt 120:
+    id: 5
+    department: "cmpt"
+    coursenum: "120"
+    semesters: ["Spring 2016"]
+    wqb: "Quantitative/Breadth-Science"
+    title: "Introduction to Computing Science and Programming I"

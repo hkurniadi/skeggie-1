@@ -54,7 +54,9 @@ class UsersController < ApplicationController
   end
   
   def cart
-    
+    if session[:user_id].nil?
+      redirect_to :root
+    end
   end
   
 	def search

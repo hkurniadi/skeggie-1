@@ -62,4 +62,46 @@ class UsersControllerTest < ActionController::TestCase
 		get(:profile, {:username => "Cody"}, {'user_id' => scott.id})
 		assert_select "form input[type=submit][name=commit][value='Remove Friend']"
 	end
+	
+	test "should return schedule page with no events" do
+		cody = users(:cody)
+		get(:schedule, {:username => "Cody"}, {'user_id' => cody.id})
+		assert_response :success
+		assert_select "td.schedlrg.bg-success", 0
+	end
+	
+	test "should return schedule page with 6 events" do
+		cody = users(:cody)
+		cody.current_courses.push('2016 Spring cmpt 276 D100 LEC')
+		cody.save!
+		get(:schedule, {:username => "Cody"}, {'user_id' => cody.id})
+		assert_response :success
+		assert_select "td.schedlrg.bg-success", 6
+	end
+	
+	test "should redirect from cart page if there is no session" do
+		get (:cart)
+		assert_response :redirect
+	end
+	
+	test "should return cart page with no classes" do
+		cody = users(:cody)
+		get(:cart, nil, {'user_id' => cody.id})
+		assert_response :success
+		assert_select 'ol', 0
+		assert_select 'li', 10 ## In nav bar
+		assert_select 'ul', 3 ## In nav bar
+	end
+	
+	test "should return cart page with 1 class and have remove from cart button" do
+		cody = users(:cody)
+		cody.current_courses = ['2016 Spring cmpt 276 D100 LEC']
+		cody.save!
+		get(:cart, nil, {'user_id' => cody.id})
+		assert_response :success
+		assert_select 'ol', 1 
+		assert_select 'li', 12 ## 10 In nav bar
+		assert_select 'ul', 4 ## 3 In nav bar
+		assert_select "form input[type=submit][name=commit][value='Remove from Cart']"
+	end
 end

@@ -1,4 +1,4 @@
-<% if current_user.current_courses[0] != "" %>
+<% if current_user.current_courses[0] != "" && !current_user.current_courses.blank? %>
 	<ol>
 		<% current_user.current_courses.each do |c| %>
 			<% c_split = c.split(" ") %>

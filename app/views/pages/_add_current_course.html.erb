@@ -1,6 +1,6 @@
 <% c_to_add = "#{year} #{semester} #{department} #{course_num} #{section} #{type}" %> <!-- used often here -->
 <% cur_url = request.original_url %>
-<% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" ) && section[0] != "G" && section[0] != "C"%>
+<% if logged_in? %>
 	<% for i in 0..5 %>
 		<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_to_add.split(" ")[0..4].join("/")}") %> <!-- Will be used to check time conflicts -->
 		<% if response.code == 200 %>
@@ -24,6 +24,10 @@
 		<% end_times[i] = c["endTime"].split(":")[0].to_i %>
 		<% ldays[i] = c["days"].split(", ") %>
 	<% end %>
+<% end %>
+<% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" ) && section[0] != "G" && section[0] != "C"%>
+	
+	
 	<% if current_user.current_courses[0] != "" %> 
 		
 		
@@ -75,7 +79,7 @@
 				<%= f.hidden_field :current_courses, :multiple => true, :value => "#{c_to_add}" %>
 			<% end %>
 			<td>
-				<div class = "current_course_button"><%= f.submit "Add to cart"%></div>
+				<div class = "current_course_button"><%= f.submit "Add to Cart"%></div>
 			</td>
 			<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
 				<td class = "prof_grade">
@@ -86,6 +90,8 @@
 						<%= grade = testing.split('<div class="grade">')[1][0..2] %>
 					<% end %>
 				</td>
+			<% else %>
+				<td></td>
 			<% end %>
 		<% end %>
 	<% else %>
@@ -95,7 +101,7 @@
 					<% if i == 0 %>
 						<td>
 						<strong>
-						<%= "This course has a time conflict with #{con.split(" ")[2..4].join(" ")} " %>
+						<%= "This course has a time conflict with #{con.split(" ")[2..4].join(" ").upcase} " %>
 						</strong>
 						<% if con_num == 1 %> <!-- Offer to replace course -->
 							<%= form_for current_user do |f| %>
@@ -111,7 +117,7 @@
 								<% end %>
 								
 									<div class = "current_course_button">
-										<%= f.submit "Replace with #{c_to_add.split(" ")[2..4].join(" ")}" %>
+										<%= f.submit "Replace with #{c_to_add.split(" ")[2..4].join(" ").upcase}" %>
 									</div>
 									
 								</td>
@@ -122,6 +128,8 @@
 										<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
 										<%= grade = testing.split('<div class="grade">')[1][0..2] %>
 									</td>
+								<% else %>
+									<td></td>
 								<% end %>
 							<% end %>
 						<% end %>
@@ -148,5 +156,17 @@
 		<td>
 			<div class = "current_course_button"><%= f.submit "Remove from Cart" %></div>
 		</td>
+		<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+			<td class = "prof_grade">
+				<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=1482&query=#{instruct_f}+#{instruct_l}")) %>
+				<% if test.include?('<li class="listing PROFESSOR">') %>
+					<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+					<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+					<%= grade = testing.split('<div class="grade">')[1][0..2] %>
+				<% end %>
+			</td>
+		<% else %>
+			<td></td>
+		<% end %>
 	<% end %>
 <% end %>

@@ -157,7 +157,6 @@
 		</div>
 	</form>
 
-
 <% for i in 0..5 %>
 	<% if semester.blank? %>
 		<% break %>
@@ -194,7 +193,7 @@
     		<th>WQB</th>
     		<th></th>
     		<% if sort == "1" %>
-    			<% if cur_sem == semi && cur_year == year %>
+    			<% if cur_sem == semi && cur_year == year.to_i %>
     			    <th></th>
     				<th>Professor Rating</th>
     			<% end %>
