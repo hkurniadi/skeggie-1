@@ -1,81 +1,110 @@
-<% require 'json' %>
-
-<% for i in 0..5 %>
-    <% res = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?2016/spring/programs/#{@user.major}") %>
-    <% if res.code == 200 %>
-        <% break %>
+<div class='panel panel-default'>
+    <% for i in 0..5 %>
+        <% res = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?2016/spring/programs/#{@user.major}") %>
+        <% if res.code == 200 %>
+            <% break %>
+        <% end %>
     <% end %>
-<% end %>
-<h2><%= "Major: #{@user.major.split('/')[0].split('-').map(&:capitalize).join(' ')}" %></h2>
-<% conc = false %>
-<% raw res["requirements"] %><br/>
-<ul>
-<% res["requirements"].each do |val| %>
-    
-    <% if !val.has_key?("title") %>
-        <li><%=val["requirements"][0]["description"]%></li>
-        <% next %>
-    <% end %>
-    <% if val["title"].include?("Stream") && val["title"] != "Streams" %>
-        <strong><li><%=val["title"] %></li></strong>
-    <% end %>
-    <% if (val["title"] == "Writing, Quantitative, and Breadth Requirements" || val["title"].include?("Faculty")) %>
+    <div class='panel-heading text-center'>
+        <h2><strong><%= "Major: #{@user.major.split('/')[0].split('-').map(&:capitalize).join(' ')}" %></strong></h2>
         <% conc = false %>
-    <% elsif (val["title"] == "Area of Concentration" || conc) %>
-        <li><strong><%= raw val["title"] %></strong></li>
-        <% if !conc %>
-            <% conc = true %>
+        <% raw res["requirements"] %><br/>
+    </div>
+    
+    <div class='panel-body'>
+        <div class='panel-group' id='accordion'>
+        <ul>
+        <% res["requirements"].each do |val| %>
             
-        <% end %>
-        <% if val.has_key?("requirements") %>
-            <%= render partial: "major_course_list", locals: {val: val} %>
-        <% end %>
-        <% next %>
-    <% elsif (val["title"] == "Concentrations" || val["title"] == "Streams") %>
-        <li><strong><%= raw val["title"] %></strong></li>
-        <% if !conc %>
-            <% conc = true %>
-            
-        <% end %>
-        <% if val.has_key?("requirements") %>
-            <%= render partial: "major_course_list", locals: {val: val} %>
-        <% end %>
-        <% next %>
-    <% end %>
-    <% case val["title"] %>
-        <% when "Writing, Quantitative, and Breadth Requirements" %>
-            <li><strong><%= raw val["title"] %></strong></li>
-            <%= raw strip_links(val["description"]) %>
-        <% when /Table/, /Groupings$/ %>
-            <li><strong><%= raw val["title"] %></strong></li>
-            <table>
-                <caption><%=val["title"]%></caption>
-                <% val["requirements"].each_with_index do |cur, i| %>
-                    <% if cur.has_key?("description") %>
-                        <tr>
-                            <th><%=cur["description"]%></th>
-                            <th></th>
-                        </tr>
-                        
-                    <% else %>
-                        <tr><td><%= "#{cur["value"].split('/').join(" ").upcase}: 
-                            #{cur["courseTitle"]}"%>
-                            <%= render partial: "/pages/add_past_course", 
-                        locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></td></tr>
-                    <% end %>
-                <% end %>  
-            </table>
-        <% when /Requirement/i, /Credential/i, /Approval/i, /Areas/i, /Courses$/i, 
-                /Stream/i, /Electives/i, /Concentration$/, /Declaration/, 
-                /Continuance/, /Continuation/, /Group/, /Program/,
-                /Co-op/, /Selection$/, "Psychology and Statistics",
-                "Computing Recommendation", "Study Abroad"%>
-            <li><strong><%= raw val["title"] %></strong></li>
-            <% if val.has_key?("requirements") %>
-                <%= render partial: "major_course_list", locals: {val: val} %>
-            <% else %> 
-                <ul><li><%= raw strip_links(val["description"]) %></li></ul>
+            <% if !val.has_key?("title") %>
+                <li><%=val["requirements"][0]["description"]%></li>
+                <% next %>
             <% end %>
-    <% end %>
-<% end %>
-</ul>
+            <% if val["title"].include?("Stream") && val["title"] != "Streams" %>
+                <div class='panel panel-default'>
+                    <div class='panel-heading'>
+                    <a data-toggle='collapse' href='#collapse2'>
+                    <strong><li><%=val["title"] %></li></strong>
+                    </a>
+                    </div>
+            <% end %>
+            <% if (val["title"] == "Writing, Quantitative, and Breadth Requirements" || val["title"].include?("Faculty")) %>
+                <% conc = false %>
+            <% elsif (val["title"] == "Area of Concentration" || conc) %>
+                    <div id='collapse2' class='panel-collapse collapse in'>
+                        <div class='panel-body'>
+                        <li><strong><%= raw val["title"] %></strong></li>
+                    
+                        <% if !conc %>
+                            <% conc = true %>
+                        <% end %>
+                        <% if val.has_key?("requirements") %>
+                            <%= render partial: "major_course_list", locals: {val: val} %>
+                        <% end %>
+                        <% next %>
+                        </div>
+                    </div>
+                </div>
+            <% elsif (val["title"] == "Concentrations" || val["title"] == "Streams") %>
+                <li><strong><%= raw val["title"] %></strong></li>
+                <% if !conc %>
+                    <% conc = true %>
+                    
+                <% end %>
+                <% if val.has_key?("requirements") %>
+                    <%= render partial: "major_course_list", locals: {val: val} %>
+                <% end %>
+                <% next %>
+            <% end %>
+            <% case val["title"] %>
+                <% when "Writing, Quantitative, and Breadth Requirements" %>
+                    <div class='panel panel-default'>
+                        <div class='panel-heading'>
+                        <a data-toggle='collapse' data-parent='#accordion' href='#collapse1'>
+                        <li><strong><%= raw val["title"] %></strong></li>
+                        </a>
+                        </div>
+                        
+                        <div id='collapse1' class='panel-collapse colapse in'>
+                            <div class='panel-body'>
+                            <%= raw strip_links(val["description"]) %>
+                            </div>
+                        </div>
+                    </div>
+                <% when /Table/, /Groupings$/ %>
+                    <li><strong><%= raw val["title"] %></strong></li>
+                    <table>
+                        <caption><%=val["title"]%></caption>
+                        <% val["requirements"].each_with_index do |cur, i| %>
+                            <% if cur.has_key?("description") %>
+                                <tr>
+                                    <th><%=cur["description"]%></th>
+                                    <th></th>
+                                </tr>
+                                
+                            <% else %>
+                                <tr><td><%= "#{cur["value"].split('/').join(" ").upcase}: 
+                                    #{cur["courseTitle"]}"%>
+                                    <%= render partial: "/pages/add_past_course", 
+                                locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></td></tr>
+                            <% end %>
+                        <% end %>  
+                    </table>
+                   
+                <% when /Requirement/i, /Credential/i, /Approval/i, /Areas/i, /Courses$/i, 
+                        /Stream/i, /Electives/i, /Concentration$/, /Declaration/, 
+                        /Continuance/, /Continuation/, /Group/, /Program/,
+                        /Co-op/, /Selection$/, "Psychology and Statistics",
+                        "Computing Recommendation", "Study Abroad"%>
+                    <li><strong><%= raw val["title"] %></strong></li>
+                    <% if val.has_key?("requirements") %>
+                        <%= render partial: "major_course_list", locals: {val: val} %>
+                    <% else %> 
+                        <ul><li><%= raw strip_links(val["description"]) %></li></ul>
+                    <% end %>
+            <% end %>
+        <% end %>
+        </ul>
+    </div>
+</div>
+

@@ -5,17 +5,20 @@
 <% case cur_month %>
 <% when 1,2,3,4 %>
 	<% cur_sem = 1 %>
+	<% cur_sem_str = "Spring" %>
 <% when 5,6,7,8 %>
 	<% cur_sem = 2 %>
+	<% cur_sem_str = "Summer" %>
 <% else %>
 	<% cur_sem = 3 %>
+	<% cur_sem_str = "Fall" %>
 <% end %>
 
 <% wqb_is_nil = true %>
 <% results = 0 %> <!-- Will be used to print out message if there are no results -->
 
-<% if cur_url.split('/').count >= 6 %>
-  <% semester = cur_url.split('/')[4].split('%20')[0] %>
+<% if !params['subject'].nil? %>
+  <% semester = params['semester'].split(' ')[0] %>
 	<% case semester %>
 	<% when "Spring" %>
 		<% semi = 1 %>
@@ -24,234 +27,226 @@
 	<% else %>
 		<% semi = 3 %>
 	<% end %>
-  <% year = cur_url.split('/')[4].split('%20')[1] %>
-  <% department = cur_url.split('/')[5].split('&')[0] %>
-  <% if cur_url.split('/').count == 7 %> 
+  <% year = params['semester'].split(' ')[1] %>
+  <% department = params['subject'] %>
+  <% if !params['wqb'].nil? %> 
   	<% wqb_is_nil = false %>
   <% end %>
 <% end %>
 
-<% if (cur_url.split('/').count >=8) %>
-	<% course_num = cur_url.split('/')[6] %>
-	<% cur_url.split('/') %>
-	<% sort = cur_url.split('/')[7].split('&')[0] %>
-	<% if (cur_url.split('/').count == 9 ) %>
+<% if !params['sort'].nil? %>
+	<% course_num = params['coursenum'] %>
+	<% sort = params['sort'] %>
+	<% if !params['wqb'].nil? %>
 		<% wqb_is_nil = false %>
 	<% end %>
 <% end %>
+<% sems = ["Summer 2014", "Fall 2014", "Spring 2015", "Summer 2015", "Fall 2015", "Spring 2016", "Summer 2016"] %>
 
-<div class="panel panel-default">
-	<form role="form" onSubmit="return process();" id="searchform">
-		<div class="form-group">	
-			<label for="semester">Term: </label>
-				<select class="form-control" name = "semester" id = "semester" form = "searchform">
-					<option value = "Summer 2014">Summer 2014</option>
-					<option value = "Fall 2014" >Fall 2014</option>
-					<option value = "Spring 2015" >Spring 2015</option>
-					<option value = "Summer 2015" >Summer 2015</option>
-					<option value = "Fall 2015" >Fall 2015</option>
-					<option value = "Spring 2016" selected = "selected">Spring 2016</option>
-					<option value = "Summer 2016">Summer 2016</option>
-				</select> <br>
-		</div>
-		
-		<div class="form-group">
-			<label for="department">Department: </label>
-				<select class="form-control" name = "department" id = "department" form = "searchform">
-					<option value = "ACMA" >ACMA</option>
-					<option value = "ALS" >ALS</option>
-					<option value = "APMA" >APMA</option>
-					<option value = "ARCH" >ARCH</option>
-					<option value = "ASC" >ASC</option>
-					<option value = "BISC" >BISC</option>
-					<option value = "BPK" >BPK</option>
-					<option value = "BUEC" >BUEC</option>
-					<option value = "BUS" >BUS</option>
-					<option value = "CHEM" >CHEM</option>
-					<option value = "CHIN" >CHIN</option>
-					<option value = "CMNS" >CMNS</option>
-					<option value = "CMPT" >CMPT</option>
-					<option value = "COGS" >COGS</option>
-					<option value = "CRIM" >CRIM</option>
-					<option value = "DEVS" >DEVS</option>
-					<option value = "DIAL" >DIAL</option>
-					<option value = "DMED" >DMED</option>
-					<option value = "EASC" >EASC</option>
-					<option value = "ECO" >ECO</option>
-					<option value = "ECON" >ECON</option>
-					<option value = "EDPR" >EDPR</option>
-					<option value = "EDUC" >EDUC</option>
-					<option value = "ENGL" >ENGL</option>
-					<option value = "ENSC" >ENSC</option>
-					<option vlaue = "ENV" >ENV</option>
-					<option value = "EVSC" >EVSC</option>
-					<option value = "FAL" >FAL</option>
-					<option value = "FAN" >FAN</option>
-					<option value = "FEP" >FEP</option>
-					<option value = "FNLG" >FNLG</option>
-					<option value = "FNST" >FNST</option>
-					<option value = "FPA" >FPA</option>
-					<option value = "FREN" >FREN</option>
-					<option value = "GEOG" >GEOG</option>
-					<option value = "GERM" >GERM</option>
-					<option value = "GERO" >GERO</option>
-					<option value = "GRAD" >GRAD</option>
-					<option value = "GRK" >GRK</option>
-					<option value = "GSWS" >GSWS</option>
-					<option value = "HIST" >HIST</option>
-					<option value = "HS" >HS</option>
-					<option value = "HSCI" >HSCI</option>
-					<option value = "HUM" >HUM</option>
-					<option value = "IAT" >IAT</option>
-					<option value = "IS" >IS</option>
-					<option value = "ITAL" >ITAL</option>
-					<option value = "JAPN" >JAPN</option>
-					<option value = "LAS" >LAS</option>
-					<option value = "LBRL" >LBRL</option>
-					<option value = "LBST" >LBST</option>
-					<option value = "LING" >LING</option>
-					<option value = "LS" >LS</option>
-					<option value = "MACM" >MACM</option>
-					<option value = "MATH" >MATH</option>
-					<option value = "MBB" >MBB</option>
-					<option value = "MSE" >MSE</option>
-					<option value = "NUSC" >NUSC</option>
-					<option value = "ONC" >ONC</option>
-					<option value = "PERS" >PERS</option>
-					<option value = "PHIL" >PHIL</option>
-					<option value = "PHYS" >PHYS</option>
-					<option value = "PLCY" >PLCY</option>
-					<option value = "POL" >POL</option>
-					<option value = "PSYC" >PSYC</option>
-					<option value = "PUB" >PUB</option>
-					<option value = "REM" >REM</option>
-					<option value = "SA" >SA</option>
-					<option value = "SAR" >SAR</option>
-					<option value = "SCD" >SCD</option>
-					<option value = "SCI" >SCI</option>
-					<option value = "SPAN" >SPAN</option>
-					<option value = "STAT" >STAT</option>
-					<option value = "URB" >URB</option>
-					<option value = "WL" >WL</option>
-				</select> <br>
-		</div>
-		
-		<label for="wqb_0">WQB: </label><br> 
-		<label for="wqb_0">W <input type = "checkbox" id = "wqb_0"> 
-		</label>
-		<label for="wqb_1">Q <input type = "checkbox" id = "wqb_1"></label>
-		<label for = "wqb_2">B-Hum <input type = "checkbox" id = "wqb_2"></label>
-		<label for = "wqb_3">B-Sci <input type = "checkbox" id = "wqb_3"></label>
-		<label for = "wqb_4">B-Soc <input type = "checkbox" id = "wqb_4"></label>
-		
-		<div class="form-group form-inline">
-			<label for="coursenum">Course Number: </label>
-			<select class="form-control" name = "sortby" id = "sortby" form = "searchform" value="<%= !sort.nil? ? "#{sort}" : "1"%>">
-				<option value = "1">Exactly</option>
-				<option value = "2">Less than</option>
-				<option value = "3">Greater than</option>
-			</select> 
-			<input class="form-control" type ="text" id = "coursenum" value='<%= !course_num.nil? ? "#{course_num}" : ""%>' maxlength="4">
-	
-			<input type="submit" class="btn btn-default" value="Search">
-		</div>
-	</form>
 
-<% for i in 0..5 %>
-	<% if semester.blank? %>
-		<% break %>
-	<% end %>
-	<% res = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester.downcase}/#{department}") %>
-	<% if res.code == 200 %>
-		<% res = res.map(&:first).map{|a| a[1][0..-1].downcase} %>
-		<% break %>
-	<% end %>
-<% end %>
-<% count = 0 %>
-<% c_in_sem = @course.select { |val| res.include?(val.coursenum)} %>
-<% c_not_in_sem = @course.select { |val| !res.include?(val.coursenum)} %>
-<% c_in_sem.each do |val| %>
-	<% if !val.semesters.include?("#{semester} #{year}") %>
-		<% val.semesters.push("#{semester} #{year}") %>
-		<% val.save! %>
-	<% end %>
-<% end %>
-
-<% c_not_in_sem.each do |val| %>
-	<% if !val.semesters.include?("Not in #{semester} #{year}") %>
-		<% val.semesters.push("Not in #{semester} #{year}") %>
-		<% val.save! %>
-	<% end %>
-<% end %>
-
-<% if !@course.blank? && !c_in_sem.blank? %>
-	<table class='search_results'>
-    	<tr>
-    		<th>Course</th>
-    		<th>Title</th>
-    		<th>Sections</th>
-    		<th>WQB</th>
-    		<th></th>
-    		<% if sort == "1" %>
-    			<% if cur_sem == semi && cur_year == year.to_i %>
-    			    <th></th>
-    				<th>Professor Rating</th>
-    			<% end %>
-    		<% end %>
-    		
-    	</tr>
-   <% @course.each do |val| %> 
-   		<% if val.semesters.include?("Not in #{semester} #{year}") %>
-   			<% next %>
-   		<% end %>
-    	<% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
-			<tr>
-				<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
-				<td class = 'course_title'><%= val.title %></td>
-				<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..5].join("/")}/#{val.coursenum}/1") %></td>
-				<td class = "wqb_specs" ><%= val.wqb %></td>
-				<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
-				<% results += 1 %>
+<div class="col-lg-10 col-lg-offset-1">
+	<div class="panel panel-default">
+		<div class='panel-body'>
+			<form role="form" onSubmit="return process();" id="searchform">
+				<div class='row'>
+					<div class="form-group col-md-6 col-md-offset-3">	
+						<label for="semester">Term: </label>
+							<select class="form-control" name = "semester" id = "semester" form = "searchform">
+								<% sems.each do |val| %>
+									<% if params['semester'] == val %>
+										<option value = '<%= val %>' selected><%= val %></option>
+									<% elsif params['semester'].nil? && val == (cur_sem_str + " " + cur_year.to_s) %>
+										<option value = '<%= val %>' selected> <%= val %> </option>
+									<% else %>
+										<option value = '<%= val %>'> <%= val %> </option>
+									<% end %>
+								<% end %>
+								
+							</select> <br>
+					</div>
+				</div>
 				
-			</tr>
-    	<% else %>
-			<% if sort == "1" %>
-				<% for i in 0..5 %>
-					<% sec_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department}/#{val.coursenum}") %>
-					<% if sec_response.code == 200 %>
-						<% break %>
+				<div class='row'>
+					<div class="form-group col-md-6 col-md-offset-3">
+						<label for="department">Department: </label>
+				
+							<select class="form-control" name = "department" id = "department" form = "searchform" >
+								<% Course.select(:department).order(:department).map(&:department).uniq.each do |val| %>
+									<% if params['subject'] == val %>
+										<option value = '<%= val.upcase%>' selected> <%=val.upcase%> </option>
+									<% else %>
+										<option value = '<%= val.upcase %>'> <%=val.upcase%> </option>
+									<% end %>
+								<% end %>
+							</select> <br>
+					</div>
+				</div>
+				
+				<div class='row col-md-6 col-md-offset-3'>
+					<label for="wqb_0">WQB: </label><br>
+					<% if !params['wqb'].nil? && params['wqb'].include?('Writing') %>
+						<label for="wqb_0">W <input type = "checkbox" id = "wqb_0" checked> </label>
+					<% else %>
+						<label for="wqb_0">W <input type = "checkbox" id = "wqb_0"> </label>
 					<% end %>
-				<% end %>
-				<% sec_response["sections"].each do |section| %>
-					<tr>
-						<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + section["number"] %></td>
-						<td class = 'course_title'><%= val.title %></td>
-						<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/")}/#{section["number"]}" ) %></td>
-						<td class = "wqb_specs" ><%= val.wqb %></td>
-						<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
-						<% if cur_year <= year.to_i && cur_sem <= semi && section["number"][0]%>
-							<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: section["number"], type: section["sectionCode"], conflicted: ""} %>
-						<% end %>
-						<% results += 1 %>
-					</tr>
-				<% end %>
-			<% else %>
-				<tr>
-					<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
-					<td class = 'course_title'><%= val.title %></td>
-					<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-4].join("/")}/#{val.coursenum}/1") %></td>
-					<td class = "wqb_specs" ><%= val.wqb %></td>
-					<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
-					<% results += 1 %>
-				</tr>
+					
+					<% if !params['wqb'].nil? && params['wqb'].include?('Quantitative') %>
+						<label for="wqb_1">Q <input type = "checkbox" id = "wqb_1" checked></label>
+					<% else %>
+						<label for="wqb_1">Q <input type = "checkbox" id = "wqb_1"></label>
+					<% end %>
+					
+					<% if !params['wqb'].nil? && params['wqb'].include?('Breadth-Humanities') %>
+						<label for="wqb_2">B-Hum <input type = "checkbox" id = "wqb_2"checked></label>
+					<% else %>
+						<label for="wqb_2">B-Hum <input type = "checkbox" id = "wqb_2"></label>
+					<% end %>
+					
+					<% if !params['wqb'].nil? && params['wqb'].include?('Breadth-Science') %>
+						<label for="wqb_3">B-Sci <input type = "checkbox" id = "wqb_3" checked></label>
+					<% else %>
+						<label for="wqb_3">B-Sci <input type = "checkbox" id = "wqb_3"></label>
+					<% end %>
+					
+					<% if !params['wqb'].nil? && params['wqb'].include?('Breadth-Social_Sciences') %>
+						<label for="wqb_4">B-Soc <input type = "checkbox" id = "wqb_4" checked></label>
+					<% else %>
+						<label for="wqb_4">B-Soc <input type = "checkbox" id = "wqb_4"></label>
+					<% end %>
+				</div>	
+				
+				<div class='row col-md-6 col-md-offset-3'>	
+					<div class="form-group form-inline">
+						<label for="coursenum">Course Number: </label>
+						<select class="form-control" name = "sortby" id = "sortby" form = "searchform" value="<%= !sort.nil? ? "#{sort}" : "1"%>">
+							<% if !params['sort'].nil? && params['sort'] == "1" %>
+								<option value = "1" selected>Exactly</option>
+							<% else %>
+								<option value = "1">Exactly</option>
+							<% end %>
+							
+							<% if !params['sort'].nil? && params['sort'] == "2" %>
+								<option value = "2" selected>Less than</option>
+							<% else %>
+								<option value = "2">Less than</option>
+							<% end %>
+							
+							<% if !params['sort'].nil? && params['sort'] == "3" %>
+								<option value = "3" selected>Greater than</option>
+							<% else %>
+								<option value = "3">Greater than</option>
+							<% end %>
+						</select> 
+						<input class="form-control" type ="text" id = "coursenum" value='<%= !course_num.nil? ? "#{course_num}" : ""%>' maxlength="4">
+				
+						<input type="submit" class="btn btn-default" value="Search">
+					</div>
+				</div>
+			</form>
+	
+		<!--<div class='row col-md-6 col-md-offset-3'>-->
+		<% for i in 0..5 %>
+			<% if semester.blank? %>
+				<% break %>
 			<% end %>
-      <% end %>
-  <% end %>
-	</table>
+			<% res = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester.downcase}/#{department}") %>
+			<% if res.code == 200 %>
+				<% res = res.map(&:first).map{|a| a[1][0..-1].downcase} %>
+				<% break %>
+			<% end %>
+		<% end %>
+		<% count = 0 %>
+		<% c_in_sem = @course.select { |val| res.include?(val.coursenum)} %>
+		<% c_not_in_sem = @course.select { |val| !res.include?(val.coursenum)} %>
+		<% c_in_sem.each do |val| %>
+			<% if !val.semesters.include?("#{semester} #{year}") %>
+				<% val.semesters.push("#{semester} #{year}") %>
+				<% val.save! %>
+			<% end %>
+		<% end %>
+		
+		<% c_not_in_sem.each do |val| %>
+			<% if !val.semesters.include?("Not in #{semester} #{year}") %>
+				<% val.semesters.push("Not in #{semester} #{year}") %>
+				<% val.save! %>
+			<% end %>
+		<% end %>
+	
+	<% if !@course.blank? && !c_in_sem.blank? %>
+		
+		<table class='search_results'>
+	    	<tr>
+	    		<th>Course</th>
+	    		<th>Title</th>
+	    		<th>Sections</th>
+	    		<th>WQB</th>
+	    		<th></th>
+	    		<% if sort == "1" %>
+	    			<% if cur_sem == semi && cur_year == year.to_i %>
+	    			    <th></th>
+	    				<th>Professor Rating</th>
+	    			<% end %>
+	    		<% end %>
+	    		
+	    	</tr>
+		   <% @course.each do |val| %> 
+		   		<% if val.semesters.include?("Not in #{semester} #{year}") %>
+		   			<% next %>
+		   		<% end %>
+		    	<% if course_num.nil? %> <!-- Course Number isn't specified, all courses from semester appear -->
+					<tr>
+						<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+						<td class = 'course_title'><%= val.title %></td>
+						<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..5].join("/")}/#{val.coursenum}/1") %></td>
+						<td class = "wqb_specs" ><%= val.wqb %></td>
+						<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+						<% results += 1 %>
+						
+					</tr>
+		    	<% else %>
+					<% if sort == "1" %>
+						<% for i in 0..5 %>
+							<% sec_response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{year}/#{semester.downcase}/courses/#{department}/#{val.coursenum}") %>
+							<% if sec_response.code == 200 %>
+								<% break %>
+							<% end %>
+						<% end %>
+						<% sec_response["sections"].each do |section| %>
+							<tr>
+								<td class = 'course_section'><%= "#{department.upcase} " + "#{course_num} " + section["number"] %></td>
+								<td class = 'course_title'><%= val.title %></td>
+								<td class = 'course_link'><%= link_to("View", "#{self.request.base_url}/course/#{cur_url.split('/')[4..-2].join("/")}/#{section["number"]}" ) %></td>
+								<td class = "wqb_specs" ><%= val.wqb %></td>
+								<%= render partial: "add_past_course", locals: {department: department, coursenum: course_num } %>
+								<% if cur_year == year.to_i && cur_sem == semi && section["number"][0]%>
+									<%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: section["number"], type: section["sectionCode"], conflicted: ""} %>
+								<% end %>
+								<% results += 1 %>
+							</tr>
+						<% end %>
+					<% else %>
+						<tr>
+							<td class = 'dep_cid'><%= "#{department.upcase} #{val.coursenum}" %></td>
+							<td class = 'course_title'><%= val.title %></td>
+							<td class = 'course_link'><%= link_to("View Sections", "#{cur_url.split("/")[0..-4].join("/")}/#{val.coursenum}/1") %></td>
+							<td class = "wqb_specs" ><%= val.wqb %></td>
+							<%= render partial: "add_past_course", locals: {department: department, coursenum: val.coursenum } %>
+							<% results += 1 %>
+						</tr>
+					<% end %>
+		      	<% end %>
+			<% end %>
+		</table>
+			
+
 	<% if results == 0 %>
-		<p id='no_results'>Sorry, there are no courses matching your query.</p>
+		<p id='no_results' class='text-center'>Sorry, there are no courses matching your query.</p>
 	<% end %>
-<% else %>
-	<p id='no_results'>Sorry, there are no courses matching your query.</p>
-<% end %>
+	
+	<% else %>
+		<p id='no_results' class='text-center'>Sorry, there are no courses matching your query.</p>
+	<% end %>
+		<!--</div>-->
+		</div>
+	</div>	
 </div>

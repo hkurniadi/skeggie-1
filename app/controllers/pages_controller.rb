@@ -1,7 +1,7 @@
 class PagesController < ApplicationController
 
 	def index
-		
+		@carousel = true
 	end
   
 	def search
@@ -56,5 +56,9 @@ class PagesController < ApplicationController
 	end
 
   def course
+  end
+  
+  def catalogue
+  	@departments = (Course.where("department LIKE ?", "#{params[:sub_l]}%")).order('id')
   end
 end

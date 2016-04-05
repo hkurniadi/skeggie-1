@@ -2,7 +2,7 @@ cmpt276:
     id: 1
     department: "cmpt"
     coursenum: "276"
-    semesters: ["Spring 2016", "Fall 2015"]
+    semesters: ["Spring 2016", "Fall 2015", "Not in Summer 2016"]
     wqb: "N/A"
     title: "Introduction to Software Engineering"
     

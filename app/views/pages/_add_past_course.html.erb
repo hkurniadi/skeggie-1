@@ -1,8 +1,20 @@
 <% if logged_in? && current_user.past_courses.include?("#{department} #{coursenum}" )%>
-	<td>
-		<strong>You have already taken this course</strong>
-	</td>
-	<td>
+	<% if !current_page?(past_list_path(current_user.username)) %>
+		<td>
+			<%= form_for current_user do |f| %>
+				<% current_user.past_courses.each do |p| %>
+					<% if p != "#{department} #{coursenum}" %>
+						<%= f.hidden_field :past_courses, :multiple => true, :value => p %>
+					<% end %>
+				<% end %>
+				<% if current_user.past_courses.size() == 1 %> <!-- Array will now be empty -->
+					<%= f.hidden_field :past_courses, :multiple => true, :value => "" %>
+				<% end %>
+				<strong>You have already taken this course</strong>
+				<div class = "past_course_button"><%= f.submit "Remove from Past Courses" %></div>
+			<% end %>
+		</td>
+	<% else %>
 		<%= form_for current_user do |f| %>
 			<% current_user.past_courses.each do |p| %>
 				<% if p != "#{department} #{coursenum}" %>
@@ -14,7 +26,7 @@
 			<% end %>
 			<div class = "past_course_button"><%= f.submit "Remove from Past Courses" %></div>
 		<% end %>
-	</td>
+	<% end %>
 <% elsif logged_in? %>
 	<%= form_for current_user do |f| %>
 		<% if current_user.past_courses != [] %>

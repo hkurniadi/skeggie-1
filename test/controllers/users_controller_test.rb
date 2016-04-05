@@ -97,7 +97,7 @@ class UsersControllerTest < ActionController::TestCase
 		cody.save!
 		get(:schedule, {:username => "Cody"}, {'user_id' => cody.id})
 		assert_response :success
-		assert_select "td.schedlrg.bg-success", 6
+		assert_select "td.schedlrg.bg-success", 12 ## Also in the modal schedule
 	end
 	
 	test "should redirect from cart page if there is no session" do
@@ -110,7 +110,7 @@ class UsersControllerTest < ActionController::TestCase
 		get(:cart, nil, {'user_id' => cody.id})
 		assert_response :success
 		assert_select 'ol', 0
-		assert_select 'li', 10 ## In nav bar
+		assert_select 'li', 9 ## In nav bar
 		assert_select 'ul', 3 ## In nav bar
 	end
 	
@@ -121,7 +121,7 @@ class UsersControllerTest < ActionController::TestCase
 		get(:cart, nil, {'user_id' => cody.id})
 		assert_response :success
 		assert_select 'ol', 1 
-		assert_select 'li', 12 ## 10 In nav bar
+		assert_select 'li', 11 ## 8 In nav bar
 		assert_select 'ul', 4 ## 3 In nav bar
 		assert_select "form input[type=submit][name=commit][value='Remove from Cart']"
 	end
@@ -137,5 +137,11 @@ class UsersControllerTest < ActionController::TestCase
 		scott = users(:scott)
 		get(:profile, {:username => scott.username}, {'user_id' => cody.id})
 		assert_select 'a', {count:0, text: 'Edit Profile'} 
+	end
+	
+	test "should have past courses" do
+		cody = users(:cody)
+		get(:past_list, {:username => cody.username}, {'user_id' => cody.id})
+		assert_response :success
 	end
 end

@@ -1,12 +1,13 @@
-
 <ul>
     <% val["requirements"].each_with_index do |cur, i| %>
         <% if val["requirements"][i-1].has_key?("description") && 
             cur.has_key?("courseTitle") %>
+            <div class='panel-heading'>
             <ul><li><%="#{cur["value"].split('/').join(" ").upcase}: 
             #{cur["courseTitle"]}"%>
             <%= render partial: "/pages/add_past_course", 
         locals: {department: cur["value"].split('/')[0], coursenum: cur["value"].split('/')[1] }%></li>
+            </div>
         <% elsif cur.has_key?("courseTitle") %>
             <li><%="#{cur["value"].split('/').join(" ").upcase}: 
             #{cur["courseTitle"]}"%>

@@ -16,6 +16,7 @@
 //= require bootstrap-sprockets
 //= require_tree .
 
+
 $(function() {
     $("[data-toggle=popover]").popover({
   	trigger: 'manual',
@@ -31,4 +32,3 @@ $(function() {
 	$(this).popover('show');
 });
 })
-

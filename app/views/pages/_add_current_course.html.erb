@@ -7,22 +7,29 @@
 			<% break %>
 		<% end %>
 	<% end %>
-	<% if response["instructor"][0].has_key?("commonName") %>
-		<% instruct_f = response["instructor"][0]["commonName"] %>
-	<% else %>
-		<% instruct_f = response["instructor"][0]["firstName"] %>
+	<% if section[2..3] == "00" %>
+		<% if response["instructor"][0].has_key?("commonName") %>
+			<% instruct_f = response["instructor"][0]["commonName"] %>
+		<% else %>
+			<% instruct_f = response["instructor"][0]["firstName"] %>
+		<% end %>
+		<% instruct_l = response["instructor"][0]["lastName"] %>
+		
 	<% end %>
-	<% instruct_l = response["instructor"][0]["lastName"] %>
-	<% st_times = Array.new(response["courseSchedule"].count) %>
-	<% end_times = Array.new(response["courseSchedule"].count) %>
-	<% ldays = Array.new(response["courseSchedule"].count) %>
+	<% st_times = Array.new() %>
+	<% end_times = Array.new() %>
+	<% ldays = Array.new() %>
 	<% samend_times = false %> <!-- Used to check if course has time conflicts -->
 	<% conflicted = Array.new(current_user.current_courses.count) %> <!-- Could have multiple conflicts -->
 	<% con_num = 0 %> 
-	<% response["courseSchedule"].each_with_index do |c,i| %> <!-- Can have multiple lecture times -->
-		<% st_times[i] = c["startTime"].split(":")[0].to_i %>
-		<% end_times[i] = c["endTime"].split(":")[0].to_i %>
-		<% ldays[i] = c["days"].split(", ") %>
+	<% if section[0] != 'C' %>
+		<% response["courseSchedule"].each_with_index do |c,i| %> <!-- Can have multiple lecture times -->
+			<% if c.has_key?('startTime') %>
+				<% st_times.push(c["startTime"].split(":")[0].to_i) %>
+				<% end_times.push(c["endTime"].split(":")[0].to_i) %>
+				<% ldays.push(c["days"].split(", ")) %>
+			<% end %>
+		<% end %>
 	<% end %>
 <% end %>
 <% if logged_in? && !current_user.current_courses.include?("#{c_to_add}" ) && section[0] != "G" && section[0] != "C"%>
@@ -95,52 +102,51 @@
 			<% end %>
 		<% end %>
 	<% else %>
-		
-			
-				<% conflicted.each_with_index do |con, i| %>
-					<% if i == 0 %>
-						<td>
-						<strong>
-						<%= "This course has a time conflict with #{con.split(" ")[2..4].join(" ").upcase} " %>
-						</strong>
-						<% if con_num == 1 %> <!-- Offer to replace course -->
-							<%= form_for current_user do |f| %>
-								<% current_user.current_courses.each do |p| %>
-									<% if p == "#{con}" %>
-										<%= f.hidden_field :current_courses, :multiple => true, :value => c_to_add %>
-									<% else %>
-										<%= f.hidden_field :current_courses, :multiple => true, :value => p %>
-									<% end %>
-								<% end %>
-								<% if current_user.current_courses.size() == 1 %> <!-- Array will now be empty -->
-									<%= f.hidden_field :current_courses, :multiple => true, :value => "" %>
-								<% end %>
-								
-									<div class = "current_course_button">
-										<%= f.submit "Replace with #{c_to_add.split(" ")[2..4].join(" ").upcase}" %>
-									</div>
-									
-								</td>
-								<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
-									<td class = "prof_grade">
-										<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct_f}+#{instruct_l}&_action_search=Search")) %>
-										<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
-										<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
-										<%= grade = testing.split('<div class="grade">')[1][0..2] %>
-									</td>
-								<% else %>
-									<td></td>
-								<% end %>
+		<% conflicted.each_with_index do |con, i| %>
+			<% if i == 0 %>
+				<td>
+				<strong>
+				<%= "This course has a time conflict with #{con.split(" ")[2..4].join(" ").upcase} " %>
+				</strong>
+				<% if con_num == 1 %> <!-- Offer to replace course -->
+					<%= form_for current_user do |f| %>
+						<% current_user.current_courses.each do |p| %>
+							<% if p == "#{con}" %>
+								<%= f.hidden_field :current_courses, :multiple => true, :value => c_to_add %>
+							<% else %>
+								<%= f.hidden_field :current_courses, :multiple => true, :value => p %>
 							<% end %>
 						<% end %>
-					<% elsif con_num > i %>
-						<%= "and #{con.split(" ")[2..4].join(" ")} " %>
-					<% else %> <!-- Already printed all conflicts -->
-						<% break %>
+						<% if current_user.current_courses.size() == 1 %> <!-- Array will now be empty -->
+							<%= f.hidden_field :current_courses, :multiple => true, :value => "" %>
+						<% end %>
+						
+							<div class = "current_course_button">
+								<%= f.submit "Replace with #{c_to_add.split(" ")[2..4].join(" ").upcase}" %>
+							</div>
+							
+						</td>
+						
 					<% end %>
 				<% end %>
-				
-		
+			<% elsif con_num > i %>
+				<strong><%= "and #{con.split(" ")[2..4].join(" ")} " %></strong>
+			<% else %> <!-- Already printed all conflicts -->
+				<% break %>
+			<% end %>
+		<% end %>
+		<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+			<td class = "prof_grade">
+				<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=&query=#{instruct_f}+#{instruct_l}&_action_search=Search")) %>
+				<% if test.include?('<li class="listing PROFESSOR">') %>
+					<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+					<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+					<%= grade = testing.split('<div class="grade">')[1][0..2] %>
+				<% end %>
+			</td>
+		<% else %>
+			<td></td>
+		<% end %>
 	<% end %>
 <% elsif logged_in? && section[0] != "G" && section[0] != "C" %>
 	
@@ -156,7 +162,7 @@
 		<td>
 			<div class = "current_course_button"><%= f.submit "Remove from Cart" %></div>
 		</td>
-		<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+		<% if section[2..3]=="00" && (!(cur_url).include? "course") && !current_page?(controller: 'users', action: 'cart') %>
 			<td class = "prof_grade">
 				<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=1482&query=#{instruct_f}+#{instruct_l}")) %>
 				<% if test.include?('<li class="listing PROFESSOR">') %>
@@ -168,5 +174,19 @@
 		<% else %>
 			<td></td>
 		<% end %>
+	<% end %>
+<% elsif logged_in? && section[0] == "C" %>
+	<td></td>
+	<% if section[2..3]=="00" && (!(cur_url).include? "course") %>
+		<td class = "prof_grade">
+			<% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=1482&query=#{instruct_f}+#{instruct_l}")) %>
+			<% if test.include?('<li class="listing PROFESSOR">') %>
+				<% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
+				<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
+				<%= grade = testing.split('<div class="grade">')[1][0..2] %>
+			<% end %>
+		</td>
+	<% else %>
+		<td></td>
 	<% end %>
 <% end %>

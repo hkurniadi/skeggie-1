@@ -10,25 +10,31 @@
   </div>
 <% end %>
 
-<%= form_for @user, class: "form-group" do |f| %>
-
-  <p>
-    <%= f.label :username, "Username: " %><br>
-    <%= f.text_field :username, class: "form-control"  %>
-  </p>
-
-  <p>
-    <%= f.label :password, "Password: " %><br>
-    <%= f.password_field :password, class: "form-control" %>
-  </p>
-
-  <p>
-    <%= f.label :password_confirmation, "Confirmation: " %><br>
-    <%= f.password_field :password_confirmation, class: "form-control" %>
-  </p>
-
-  <p>
-    <%= f.submit "Sign Up", class: "btn btn-default" %>
-  </p>
-
-<% end %>
+<div class='col-lg-6'>
+  <div class="panel panel-default">
+    
+    <%= form_for @user, class: "form-group" do |f| %>
+      <div class="panel-heading">
+        <p>
+          <%= f.label :username, "Username: " %><br>
+          <%= f.text_field :username, class: "form-control"  %>
+        </p>
+      
+        <p>
+          <%= f.label :password, "Password: " %><br>
+          <%= f.password_field :password, class: "form-control" %>
+        </p>
+      
+        <p>
+          <%= f.label :password_confirmation, "Confirmation: " %><br>
+          <%= f.password_field :password_confirmation, class: "form-control" %>
+        </p>
+      
+        <p>
+          <%= f.submit "Sign Up", class: "btn btn-default" %>
+        </p>
+      </div>
+    <% end %>      
+      
+  </div>
+</div>

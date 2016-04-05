@@ -132,4 +132,24 @@ class PagesControllerTest < ActionController::TestCase
 		get(:course, {:semester => "Spring 2016", :subject => "CMPT", :coursenum =>"276", :section => "D100"})
 		assert_select 'li.prof_grade', 1 ## Should have only 1 grade because there is one professor
 	end
+	
+	test "should return general course page" do 
+		get(:course, {:subject => "cmpt", :coursenum => "276"})
+		assert_response :success
+	end
+	
+	test "general course page has links to only semesters that are available" do
+		get(:course, {:subject => "cmpt", :coursenum => "276"})
+		assert_response :success
+		assert_select 'a', {count: 1, text: 'Fall 2015'}
+		assert_select 'a', {count: 1, text: 'Spring 2016'}
+		assert_select 'a', {count: 0, text: 'Summer 2016'} ## Actually is in this semester, just not for this test
+	end
+	
+	test "should return catalogue page" do
+		get(:catalogue, {:sub_l => "c"})
+		assert_response :success
+		assert_select 'a', 37 ## 6 in nav bar
+		assert_select 'li', 10 ## 5 in nav bar
+	end
 end

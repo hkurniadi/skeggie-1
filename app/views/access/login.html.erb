@@ -1,28 +1,41 @@
 <% if flash[:alert] %>  
-  <div class="notice"><%= flash[:alert] %></div>
+  <div class="alert alert-danger">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong><%= flash[:alert] %></strong>
+  </div>
 <% end %>
 
-<% if !logged_in? %>
-  <%= form_for(:session, url: login_path, class: "form-group ") do |f| %>
-  <p>
-    <%= f.label :username, "Username: " %><br>
-    <%= f.text_field :username, class: "form-control" %>
-    </p>
 
-    <p>
-      <%= f.label :password, "Password: " %><br>
-      <%= f.password_field :password, class: "form-control" %>
-    </p>
-  <p>
-    <%= f.submit "Login", class: "btn btn-default" %>
-  </p>
+<div class='col-lg-6 col-lg-offset-3'>
+  <div class="panel panel-default">
+    <% if !logged_in? %>
+      <%= form_for(:session, url: login_path, class: "form-group") do |f| %>
+      <div class="panel-heading">
+        <p>
+          <%= f.label :username, "Username: " %><br>
+          <%= f.text_field :username, class: "form-control" %>
+        </p>
+      
+        <p>
+          <%= f.label :password, "Password: " %><br>
+          <%= f.password_field :password, class: "form-control" %>
+        </p>    
+      
 
-  <p>
-    New User? <%= link_to('Sign Up here!', signup_path) %>
-  </p>
-  <% end %>
-<% else %>
-  <script type="text/javascript">
-    window.location.href="/"  
-  </script>
-<% end %>
+        <p>
+          <%= f.submit "Login", class: "btn btn-default" %>
+        </p>
+    
+        <p>
+          New User? <%= link_to('Sign Up here!', signup_path) %>
+        </p>
+      </div>
+    <% end %>
+    <% else %>
+      <script type="text/javascript">
+        window.location.href="/"  
+      </script>
+    <% end %>
+  </div>
+</div>
+

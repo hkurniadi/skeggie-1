@@ -1,14 +1,28 @@
-<div id="myCarousel">
+<div id="carousel" class="carousel slide" data-ride="carousel">
+    <!-- Menu -->
     <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#carousel" data-slide-to="0" class="active"></li>
+        <li data-target="#carousel" data-slide-to="1"></li>
+        <li data-target="#carousel" data-slide-to="2"></li>
     </ol>
     
-    <secton class="carousel-inner">
-        <!--<div class="active item"><img src="assets/SFUquad.jpg" alt="SFU Quadrangle"></div> -->
-        <div class="active item"><img src="assets/bg1.jpg" alt="Green Background"></div> 
-    </secton><!--carousel-inner-->
-    
-    <a href="#myCarousel" class="left carousel-control" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-    <a href="#myCarousel" class="right carousel-control" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-</div><!--myCarousel-->
+    <!-- Items -->
+    <div class="carousel-inner">
+        <div class="active item">
+            <img src="https://www.sfu.ca/content/sfu/mecs/facilities/sfu-burnaby-campus/about-this-campus/_jcr_content/main_content/image_1.img.jpg/1390344981628.jpg" alt="Slide 1" />
+        </div>
+        <div class="item">
+            <img src="http://www.abbarch.com/wp-content/uploads/2014/10/SFU-Surrey-Campus-RD_20070629_0747.jpg" alt="Slide 2" />
+        </div>
+        <div class="item">
+            <img src="http://www.abbarch.com/wp-content/uploads/2014/10/SFU-Surrey-Campus-RD_20070629_0668.jpg" alt="Slide 3" />
+        </div>
+    </div> 
+    <a href="#carousel" class="left carousel-control" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+    </a>
+    <a href="#carousel" class="right carousel-control" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    </a>
+</div>
+

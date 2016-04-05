@@ -13,6 +13,14 @@ class UsersController < ApplicationController
 		@user = User.find(params[:id])
   end
   
+  def past_list
+    if session[:user_id] == User.find_by_username(params[:username]).id
+      @past_list = User.find_by_username(params[:username]).past_courses.sort_by(&:downcase)
+    else
+      redirect_to :root
+    end
+  end
+  
   def edit
     
     if !User.exists?(username: params[:username])
@@ -28,7 +36,7 @@ class UsersController < ApplicationController
   def update
     @user = current_user
     if @user.update(user_params)
-	    redirect_to :back, alert: "Succesfully updated."
+	    redirect_to :back, alert: "Succesfully updated!"
     else
       render 'edit'
     end
@@ -48,7 +56,6 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       redirect_to action: 'profile', username: @user.username
     else
-      flash.now[:alert] = "Username already taken, please enter a different username."
       render 'new'
     end
   end
@@ -71,14 +78,14 @@ class UsersController < ApplicationController
 	  if session[:user_id].nil?
 	    redirect_to :root
 	  else
-	    @user = User.find(session[:user_id])
+	    @user = User.find_by_username(params[:username])
 	  end
 	end
 	
   private
   
   def user_params
-    params.require(:user).permit(:username, :first_name, :last_name, {:past_courses => []}, :address, {:friend_ids => []}, {:current_courses => []}, :password, :password_confirmation, :major)
+    params.require(:user).permit(:username, :first_name, :last_name, {:past_courses => []}, :address, {:friend_ids => []}, {:current_courses => []}, :password, :password_confirmation, :major, :avatar_id)
   end
   
 end

@@ -1,20 +1,30 @@
-<% if current_user.current_courses[0] != "" && !current_user.current_courses.blank? %>
-	<ol>
-		<% current_user.current_courses.each do |c| %>
-			<% c_split = c.split(" ") %>
-			<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_split[0]}/#{c_split[1]}/#{c_split[2]}/#{c_split[3]}/#{c_split[4]}") %>
-			<li>
-				<%= c_split[2..-2].join(" ").upcase %>
-				<%= render partial: "/pages/add_current_course", locals: {year: c_split[0], semester: c_split[1], department: c_split[2], course_num: c_split[3], section: c_split[4], type: c_split[5], conflicted: ""} %>
-				<% response["courseSchedule"].each do |lec_time| %> <!-- Lectures can be in different rooms and at different times on different days -->
-					<ul>
-						<li>  
-							<%= "#{lec_time["startTime"]} - #{lec_time["endTime"]}" %> <%= "#{lec_time["days"]}" %><br>
-							<%= "#{lec_time["buildingCode"]} #{lec_time["roomNumber"]}, #{lec_time["campus"]}" %> 
+<div class="col-md-12">
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	<h4>Course Cart</h4>
+        </div>
+        <div class="panel-body">
+			<% if current_user.current_courses[0] != "" && !current_user.current_courses.blank? %>
+				<ol>
+					<% current_user.current_courses.each do |c| %>
+						<% c_split = c.split(" ") %>
+						<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{c_split[0]}/#{c_split[1]}/#{c_split[2]}/#{c_split[3]}/#{c_split[4]}") %>
+						<li>
+							<%= c_split[2..-2].join(" ").upcase %>
+							
+							<% response["courseSchedule"].each do |lec_time| %> <!-- Lectures can be in different rooms and at different times on different days -->
+								<ul>
+									<li>  
+										<%= "#{lec_time["startTime"]} - #{lec_time["endTime"]}" %> <%= "#{lec_time["days"]}" %><br>
+										<%= "#{lec_time["buildingCode"]} #{lec_time["roomNumber"]}, #{lec_time["campus"]}" %> 
+									</li>
+								</ul>
+							<% end %>
+							<%= render partial: "/pages/add_current_course", locals: {year: c_split[0], semester: c_split[1], department: c_split[2], course_num: c_split[3], section: c_split[4], type: c_split[5], conflicted: ""} %>
 						</li>
-					</ul>
-				<% end %>
-			</li>
+						<% end %>
+					</ol>
 			<% end %>
-		</ol>
-<% end %>
+		</div>
+	</div>
+</div>

@@ -1,282 +1,84 @@
 <% cururl = request.original_url %> 
 <% url_len = cururl.length() %>
-<% if cururl.split('/').count >=5 %>
-  <% semester = cururl.split('/')[4].split('%20')[0] %>
-  <% year = cururl.split('/')[4].split('%20')[1] %>
-  <% department = cururl.split('/')[5] %>
-<% end %>
 
-<% cur_url = request.original_url %> 
-<% cur_year = Date.today.year.to_s %> <!-- Will be used to check if course is from a past year -->
-<% cur_month = Date.today.month %> <!-- Will determine semester that is in session -->
+<% cur_year = Date.today.year.to_s %> <!-- Will be used to check if course is from a past year if we have section, or if not will be used to get most recent info on course -->
+<% cur_month = Date.today.month %> <!-- Will determine semester that is in session, or will be used to get most recent info on course -->
 
 <% case cur_month %>
 <% when 1,2,3,4 %>
-	<% cur_sem = 1 %>
+	<% cur_sem = "Spring" %>
 <% when 5,6,7,8 %>
-	<% cur_sem = 2 %>
+	<% cur_sem = "Summer" %>
 <% else %>
-	<% cur_sem = 3 %>
-<% end %>
-<% case semester %>
-<% when "Spring" %>
-  <% sem_num = 1 %>
-<% when "Summer" %>
-  <% sem_num = 2 %>
-<% when "Fall" %>
-  <% sem_num = 3 %>
-<% end %>
-<% if cururl.split('/').count >=6 %>
-  <% course_num = cururl.split('/')[6] %>
+	<% cur_sem = "Fall" %>
 <% end %>
 
 <% if cururl.split('/').count >= 7 && cururl[url_len - 5] == '/' %>
-  <% course_section = cururl.split('/')[7] %>
-<% end %>
+  <%= render partial: "course_with_section", locals: {cururl: cururl, url_len: url_len, cur_year: cur_year, cur_month: cur_month, cur_sem: cur_sem}%>
 
-<% for i in 0..5 %>
-	<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{course_section}") %>
-	<% if response.code == 200 %>
-		<% break %>
-	<% end %>
-<% end %>
-
-<h2>Course: <%= "#{response["info"]["name"]} #{response["info"]["term"]}" %></h2>
-<h3>Title: <%= "#{response["info"]["title"]}" %></h3>
-
-<% if cururl[url_len-2..url_len-1] != "00" %>
-  <p>
-    <strong>This course requires that you also enroll in another course.</strong>
-    <%= link_to("Click here", "#{cururl[0..(url_len-3)]}00") %>
-  </p>
-<% end %>
-
-<% if cur_sem == sem_num && cur_year == year %>
-  <%= render partial: "add_current_course", locals: {year: year, semester: semester, department: department, course_num: course_num, section: course_section, type: response["courseSchedule"][0]["sectionCode"], conflicted: ""} %>
-<% end %>
-<% if response.has_key?('instructor') %>
-  <% response["instructor"].each do |instruct| %>
-    <% if instruct["roleCode"] == "PI" %>
-      <p>Primary Instructor: <%= instruct["name"] %></p>
-      <% test = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=Simon+Fraser+University&schoolID=1482&query=#{instruct["name"].split(" ")[0]}+#{instruct["name"].split(" ")[1]}&_action_search=Search")) %>
-      <% if test.include?('<li class="listing PROFESSOR">') %>
-        <% res = test.split('<li class="listing PROFESSOR">')[1].split('"')[1] %>
-				<% testing = Net::HTTP.get(URI.parse("http://www.ratemyprofessors.com#{res}")) %>
-				<% grade = testing.split('<div class="grade">')[1][0..2] %>
-				<li class="prof_grade"><p>Rating on <%= link_to("Rate My Professors", "http://www.ratemyprofessors.com")%>: <%= link_to("#{grade}/5", "http://www.ratemyprofessors.com#{res}") %></p></li>
-      <% end %>
-    <% elsif insturct["roleCode"] == "SI" %>
-      <p>Secondary Instructor: <%= instruct["name"] %></p>
-    <% end %>
+<% else %>
+  <% department = params[:subject] %>
+  <% course_num = params[:coursenum] %>
+  <% for i in 0..5 %>
+  	<% response = HTTParty.get("http://www.sfu.ca/bin/wcm/academic-calendar?#{cur_year}/#{cur_sem.downcase}/courses/#{department}/#{course_num}") %>
+  	<% if response.code == 200 %>
+  		<% break %>
+  	<% end %>
   <% end %>
-<% end %>
-
-<% info = response["info"] %> <!-- Will be used often for checking JSON and printing it -->
-
-<% if info.has_key?('deliveryMethod') %>
-  <p><%= "Delivery Method: #{info['deliveryMethod']}" %></p>
-<% end %>
-
-<% if info.has_key?('units') %>
-  <p><%= "Units/Credits: #{info["units"]}" %></p>
-<% end %>
-
-<% if info.has_key?('designation') %>
-  <p>
-    <%= "WQB: " %>
-    <% if info["designation"] != "" %>
-      <% if info["designation"].include? '-' %>
-        <%= info["designation"].split('-')[1] %>
+  <h1><%= "#{department.upcase} #{course_num}: #{response["title"]}" %></h1>
+  <h4><%= "#{response["units"]}.0 units" %></h4>
+  <% if response.has_key?('description') %>
+    <h2>Details: </h2>
+    
+    <!-- Checking if Prerequisites are in description -->
+    <% if response["description"].split("Prerequisite").count > 1 %>
+      <p><%= raw response["description"].split("Prerequisite: ")[0]%></p>
+      
+      <!-- Checking if WQB is in description -->
+      <% if ['Writing','Quantitative','Breadth-Humanities','Breadth-Science','Breadth-Social Sciences'].any? { 
+      |word| response["description"].split("Prerequisite")[1].include? word } %> 
+        <% fw = response["description"].split("Prerequisite")[1].split('.').select { |val| 
+        ['Writing','Quantitative','Breadth-Humanities','Breadth-Science','Breadth-Social Sciences'].any? { |word| val.include? word
+          }
+        }[0] %> <!-- First WQB Word -->
+        <h2>Prerequisites: </h2>
+        <p><%= response["description"].split("Prerequisite: ")[1].split(fw)[0]%></p>
+        
+        <h2>WQB: </h2>
+        <p><%= "#{fw} #{response["description"].split("Prerequisite: ")[1].split(fw)[1]}" %> </p>
       <% else %>
-        <%= info["designation"] %>
+        <h2>Prerequisites: </h2>
+        <p><%= raw response["description"].split("Prerequisite: ")[1] %></p>
       <% end %>
     <% else %>
-      <%= "N/A" %>
+      <% if ['Writing','Quantitative','Breadth-Humanities','Breadth-Science','Breadth-Social Sciences'].any? { 
+      |word| response["description"].include? word } %> 
+        <% fw = response["description"].split('.').select { |val| 
+        ['Writing','Quantitative','Breadth-Humanities','Breadth-Science','Breadth-Social Sciences'].any? { |word| val.include? word
+          }
+        }[0] %>
+        
+        <p><%= raw response["description"].split(fw)[0] %></p>
+        
+        <h2>WQB:</h2>
+        <p><%="#{fw} #{response["description"].split(fw)[1]}" %></p>
+      <% else %>
+        <p><%= raw response["description"]%></p>
+      <% end %>
     <% end %>
-  </p>
-<% end %>
-
-<% if response["courseSchedule"][0].has_key?('startTime') %>
-  <% case response["courseSchedule"][0]["sectionCode"] %>
-  <% when "LEC" %>
-    <p class = "lec_time">Lecture Time + Location:</p>
-  <% when "LAB" %>
-    <p class = "lec_time">Lab Time + Location:</p>
-  <% when "TUT" %>
-    <p class = "lec_time">Tutorial Time + Location: </p>
-  <% when "SEM" %>
-    <p class = "lec_time">Seminar Time + Location: </p>
   <% end %>
-  <% response["courseSchedule"].each do |lecTime| %> <!-- Lectures can be in different rooms and at different times on different days -->
-    <ul>
-      <li>  
-        <%= "#{lecTime["startTime"]} - #{lecTime["endTime"]}" %> <%= "#{lecTime["days"]}" %><br>
-        <%= "#{lecTime["buildingCode"]} #{lecTime["roomNumber"]}, #{lecTime["campus"]}" %> 
-      </li>
-    </ul>
-  <% end %>
-<% end %>
-
-<% if response.has_key?('examSchedule') %>
-  <p class = "exam_time">Exam Time + Location:</p>
-  <% response["examSchedule"].each do |examTime| %>
+  <!-- Would like to also add sections in that semester -->
+  <h2>Semesters offered: </h2>
   <ul>
-    <li>
-      <% exam_arr = examTime["startDate"].split(" ")[0..2] %>
-      <% exam_arr.push(examTime["startDate"].split(" ")[5]) %>
-      <% exam_arr.each_with_index do |examDate, index| %>
-        <% if index%2 == 0 %>
-          <%= "#{examDate}, " %>
-        <% else %>
-          <%= "#{examDate} " %>
-        <% end %>
-      <% end %> <br>
-      <%= "#{examTime["startTime"]} - #{examTime["endTime"]}" %> <br>
-      <%= "#{examTime["buildingCode"]} #{examTime["roomNumber"]}, #{examTime["campus"]}" %>
-    </li>
-  </ul>
-  <% end %>
-<% end %>
-
-<% if info.has_key?('prerequisites') %>
-  <% if info["prerequisites"] == "" %>
-    <p><%= "Prerequisites: N/A" %></p>
-  <% else %>
-    <p><%= "Prerequisites: #{info["prerequisites"]}" %></p>
-  <% end %>
-<% end %>
-
-<% if info.has_key?('corequisites') %>
-  <% if info["corequisites"] == "" %>
-    <p><%= "Corequisites: N/A" %></p>
-  <% else %>
-    <p><%= "Corequisites: #{info["corequisites"]}" %></p>
-  <% end %>
-<% end %>
-
-<% if info.has_key?('notes') %>
-  <p class = "notes">
-    <%= "Notes: "%> <br><br>
-    <%= sanitize "#{info["gradingNotes"]}" %> <br>
-    <%= sanitize "#{info["notes"]}" %>
-  </p>
-<% end %>
-
-<% if info.has_key?('courseDetails') %>
-  <h2>Details: </h2>
-  <p><%= raw "#{info["courseDetails"]}"%></p>
-<% end %>
-
-<% if info.has_key?('description') %>
-  <h2>Course Description: </h2>
-  <p><%= sanitize "#{info["description"]}" %></p>
-<% end %>
-
-<% if response.has_key?('grades') %>
-  <h2>Grading: </h2>
-  <ul>
-    <% response["grades"].each do |grade| %>
-      <li>
-        <%= "#{grade["description"]}" %>
-        <strong><%= "#{grade["weight"]}%" %></strong>
-      </li>
+    <% sem = Course.where("department = ? AND coursenum = ?", params[:subject], params[:coursenum]) %>
+    <% sem[0].semesters.each do |val| %>
+      <% if val !~ /not in/i %>
+        <li>
+          <%= link_to("#{val}", search_exact_path(val, department, course_num, '1')) %>
+        </li>
+      <% end %>
     <% end %>
+    
   </ul>
 <% end %>
 
-<% if info.has_key?('materials') or response.has_key?('requiredText') or response.has_key?('recommendedText') %>
-  <h2>Materials: </h2>
-<% end %>
-
-<% if info.has_key?('materials') && info["materials"] != "" %>
-  <%= sanitize "#{info["materials"]}" %>
-<% end %>
-
-<% if response.has_key?('requiredText') %>
-  <h3>Required Texts:</h3>
-  <ol>
-    <% response["requiredText"].each do |textB| %>
-      <li>
-        <%= strip_tags("#{textB["details"]}") %> <br>
-        <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
-          <% if textB["isbn"].include? "-" %>
-            <% isbn_arr = textB["isbn"].split('-') %>
-            <% isbn = "" %>
-            <% isbn_arr.each do |num| %>
-              <% isbn += num %>
-            <% end %>
-          <% else %>
-            <% isbn = textB["isbn"] %>
-          <% end %>
-          <%= "ISBN: #{isbn}" %>
-          <%= link_to("Buy at AbeBooks", "http://www.abebooks.com/servlet/SearchResults?isbn=#{isbn}&sortby=2&sts=t") %>
-        <% end %>
-      </li>
-    <% end %>
-  </ol>
-<% end %>
-
-<% if response.has_key?('recommendedText') %>
-  <h3>Recommended Texts:</h3>
-  <ol>
-    <% response["recommendedText"].each do |textB| %>
-      <li>
-        <%= raw "#{textB["details"]}" %> <br>
-        <% if textB.has_key?('isbn') && textB["isbn"] != " " %>
-          <% if textB["isbn"].include? "-" %>
-            <% isbn_arr = textB["isbn"].split('-') %>
-            <% isbn = "" %>
-            <% isbn_arr.each do |num| %>
-              <% isbn += num %>
-            <% end %>
-          <% else %>
-            <% isbn = textB["isbn"] %>
-          <% end %>
-          <%= "ISBN: #{isbn}" %>
-          <%= link_to("Buy at AbeBooks", "http://www.abebooks.com/servlet/SearchResults?isbn=#{isbn}&sortby=2&sts=t") %>
-        <% end %>
-      </li>
-    <% end %>
-  </ol>
-<% end %>
-
-
-<% if course_section[2..3] == "00" %> <!-- Section is a lecture -->
-  <% section_response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}") %>
-  <% has_tut = false %>
-  <% has_lab = false %>
-  <% section_response.each do |sect| %>
-    <% if sect["text"] != course_section && sect["text"][0..1] == course_section[0..1] %>
-      <% if has_tut == false %>
-        <% has_tut = true %>
-        <h2>This course has other required sections. </h2>
-        <h3>One of: </h3>
-      <% end %>
-      <% tut_response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{sect["text"]}") %>
-      <ul>
-        <li>
-          <%= link_to("#{sect["text"]}", "#{cururl[0..url_len-6]}/#{sect["text"]}") %>
-          <%= "#{tut_response["courseSchedule"][0]["startTime"]} - #{tut_response["courseSchedule"][0]["endTime"]} #{tut_response["courseSchedule"][0]["days"]}" %>
-        </li>
-      </ul>
-    <% elsif sect["sectionCode"] == "LAB" %>
-      <% if has_tut == false %>
-        <% if has_lab == false %>
-          <% has_lab == true %>
-          <h2>This course has other required sections. </h2>
-          <h3>One of: </h3>
-        <% end %>
-      <% elsif has_lab == false %>
-        <% has_lab == true %>
-        <h3>And one of: </h3>
-      <% end %>
-      <% lab_response = HTTParty.get("http://www.sfu.ca/bin/wcm/course-outlines?#{year}/#{semester}/#{department}/#{course_num}/#{sect["text"]}") %>
-      <ul>
-        <li>
-          <%= link_to("#{sect["text"]}", "#{cururl[0..url_len-6]}/#{sect["text"]}") %>
-          <%= "#{lab_response["courseSchedule"][0]["startTime"]} - #{lab_response["courseSchedule"][0]["endTime"]} #{lab_response["courseSchedule"][0]["days"]}" %>
-        </li>
-      </ul> 
-    <% end %>
-  <% end %>
-<% end %>

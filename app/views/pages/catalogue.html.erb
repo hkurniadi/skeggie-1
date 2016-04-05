@@ -1,0 +1,51 @@
+<% id_num = 0 %>
+<div class="col-lg-4 col-lg-offset-4">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            
+            <% @departments.each_with_index do |val,i| %>
+                <% if i == 0 || (val.department != @departments[i-1].department) %>
+                    <% if i != 0 %>
+                       </div>
+                    <% end %>
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href='<%= "#collapse#{id_num+1}"%>'>
+                                <%= val.department.upcase %>
+                                <% id_num += 1 %>
+                            </a>
+                        </h4>
+                    </div>
+                    
+                    <div id='<%="collapse#{id_num}"%>' class="panel-collapse collapse">
+                        <li><%= link_to("#{val.department.upcase} #{val.coursenum.upcase}", 
+                            course_general_path(val.department, val.coursenum)) %></li>
+                <% else %>
+                    
+                        <li>
+                            <%= link_to("#{val.department.upcase} #{val.coursenum.upcase}", 
+                            course_general_path(val.department, val.coursenum)) %>
+                        </li>                        
+                     
+                <% end %>
+                <% if i+1 == @departments.count%>
+                    </div>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+
+<!--<ul>-->
+<!--    <//% @departments.each_with_index do |val,i| %>-->
+<!--        <//% if i == 0 || (val.department != @departments[i-1].department) %>-->
+<!--            <h3><//%= val.department.upcase %></h3>-->
+<!--        <//% else %>-->
+<!--            <li>-->
+<!--                <//%= link_to("#{val.department.upcase} #{val.coursenum.upcase}", -->
+<!--                course_general_path(val.department, val.coursenum)) %>-->
+<!--            </li>-->
+<!--        <//% end %>-->
+<!--    <//% end %>-->
+<!--</ul>-->

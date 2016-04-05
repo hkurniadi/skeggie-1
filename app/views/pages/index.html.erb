@@ -1,14 +1,33 @@
-<!--<div class="content row">-->
-<!--  <##%= render "components/carousel" %>-->
-<!--</div>-->
-
-<div class="jumbotron">
-  <h1>Welcome to Skeggie!</h1>
-  <p>SFU's #1 Course Scheduling App</p>
-  <% if logged_in? %>
-  	<%= link_to('Get Started Here', search_path, :class=> "btn btn-primary btn-lg", :role=>"button") %>
-  <% else %>
-  	<%= link_to('Get Started Here', login_path, :class=> "btn btn-primary btn-lg", :role=>"button") %>
-  <% end %>
+<div class="col-lg-12">
+    <h1 class="page-header text-center">
+        Welcome to Skeggie!
+    </h1>
 </div>
 
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>SFU Course Sheduling App</h4>
+        </div>
+        <div class="panel-body">
+            <p>Skeggie is a course-scheduling application for SFU that makes use of SFU's Course Outlines API. Once 
+            logged in, students can plan for future semesters by searching for courses and adding them to their schedule.</p>
+              <% if logged_in? %>
+              	<%= link_to('Get Started Here', search_path, :class=> "btn btn-primary btn-lg", :role=>"button") %>
+              <% else %>
+              	<%= link_to('Get Started Here', login_path, :class=> "btn btn-primary btn-lg", :role=>"button") %>
+              <% end %>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>About Us</h4>
+        </div>
+        <div class="panel-body">
+            <p>Lmao</p>
+            <a href="#" class="btn btn-default">Learn More</a>
+        </div>
+    </div>
+</div>

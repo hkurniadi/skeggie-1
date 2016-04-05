@@ -1,0 +1,21 @@
+<ul>
+
+<% @past_list.each_with_index do |val,i| %>
+    <% if i == 0 %>
+        <h4><%= val.split(' ')[0].upcase %></h4>
+        <ul>
+    <% elsif val.split(' ')[0] != @past_list[i-1].split(' ')[0] %>
+        </ul>
+        <h4><%= val.split(' ')[0].upcase %></h4>
+        <ul>
+    
+    <% end %>
+    <li>
+        <%= val.upcase %>
+        <%= render partial: "pages/add_past_course", locals: {department: val.split(' ')[0], coursenum: val.split(' ')[1]}%>
+    </li>
+<% end %>
+<% if !@past_list.empty? %>
+    </ul>
+<% end %>
+</ul>

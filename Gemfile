@@ -15,6 +15,8 @@ gem 'coffee-rails', '~> 4.1.0'
 # gem 'therubyracer', platforms: :ruby
 gem 'bootstrap-sass'
 
+gem 'jasny-bootstrap-rails'
+
 gem 'factory_girl_rails'
 
 # Use jquery as the JavaScript library
