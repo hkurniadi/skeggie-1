@@ -16,16 +16,15 @@ class PagesControllerTest < ActionController::TestCase
 	test "nav bar should be different depending on log in status" do
 		get(:index)
 		assert_response :success
-		assert_select 'li', 6 ## 6 List items in nav bar
+		assert_select 'li', 11 ## 11 List items in nav bar
 		assert_select 'a', 'Login'
 		
 		cody = users(:cody)
 		get(:index, nil, {'user_id' => cody.id})
 		assert_response :success
-		assert_select 'li', 10 ## 4 new list items in nav bar
+		assert_select 'li', 15 ## 4 new list items in nav bar
 		assert_select 'a', 'Log out'
 		assert_select 'a', 'Profile'
-		assert_select 'a', 'My Schedule'
 	end
 	
 	test "should contain list of courses" do
@@ -149,7 +148,7 @@ class PagesControllerTest < ActionController::TestCase
 	test "should return catalogue page" do
 		get(:catalogue, {:sub_l => "c"})
 		assert_response :success
-		assert_select 'a', 37 ## 6 in nav bar
-		assert_select 'li', 10 ## 5 in nav bar
+		assert_select 'a', 40 ## 9 in nav bar
+		assert_select 'li', 13 ## 8 in nav bar
 	end
 end

@@ -4,12 +4,13 @@
 
 
 
-// @import url(https://fonts.googleapis.com/css?family=Noto+Sans);
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans);
 html{
   font-family: NotoSans;
   background: "assets/bg1.jpg"; 
   background-size: 100%
 }
+
 .navbar {
   font-size: 15px;
   padding-top: 5px;
@@ -48,11 +49,11 @@ table, th, td {
 }
 
 body { 
-    padding-top: 75px; 
+    padding-top: 75px;
 }
 
 .carousel {
-    height: 1200px;
+    height: 800px;
     margin-bottom: 60px;
     margin-top:-75px;
 }
@@ -63,15 +64,15 @@ body {
 /* Declare heights because of positioning of img element */
  .carousel .item {
     width: 100%;
-    height: 1200px;
+    height: 800px;
     background-color: #777;
 }
 .carousel-inner > .item > img {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     min-width: 100%;
-    height: 1200px;
+    height: 800px;
 }
 @media (min-width: 768px) {
     .carousel-caption p {
@@ -84,28 +85,24 @@ body {
 
 footer
 {
+    font-size: small;
     height: 100px;
     background-color: #222;
-    position: absolute;
+    position: relative;
     bottom: 0;
-    left: 0;
-    right: 0;
     width: 100%;
-    margin-top: 150px;
     text-align: center;
+    clear: both;
+    padding-top: 15px;
 }
 
-.calbutton{
-     position: fixed;
-     float:right;
-     bottom:0;
-     right:0;
-}
+
 
 table.center {
-margin-left:auto; 
-margin-right:auto;
+    margin-left:auto; 
+    margin-right:auto;
 }
+
 
 
 

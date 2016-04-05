@@ -35,14 +35,25 @@
 				    <li><%= link_to('Profile', profile_path(current_user.username))%></li>
 			    	<li><//%= link_to('My Schedule', schedule_path(current_user.username)) %></li>
 			    	<li><%= link_to('Cart', cart_path) %></li>
-			    	<li><a href="#" class="glyphicon glyphicon-shopping-cart" data-toggle="popover" title="Course Cart" data-placement="bottom" data-content='<% current_user.current_courses.each do |val|%> <%= "<li>#{val}</li>"%> <% end %>'></a></li>
+			    	<li><a href="#" class="glyphicon glyphicon-shopping-cart" data-toggle="popover" title="Course Cart" data-placement="bottom" data-content='<% current_user.current_courses.each do |val|%> 
+			    	<% if current_user.current_courses.count >= 1 && current_user.current_courses[0] != ""%>
+			    		<%= "<li>#{val.split(' ')[0..1].join(' ')} #{val.split(' ')[2].upcase} #{val.split(' ')[3..-1].join(' ')}</li>"%> 
+			    		<% end %>
+			    		<% end %>'></a></li>
 			    	
 					<li><%= link_to('Log out', logout_path, method: :delete) %></li>
+					
 					<!--<li><//%= render "components/calendar" %></li>-->
 					
 				<% else %>
 				    <li><%= link_to('Login', login_path) %></li>
 				<% end %>
+				
+				<li>
+					<button type="button" class="btn btn-primary btn-lg calbutton" data-toggle="modal" data-target="#schedule">
+					    <span class="glyphicon glyphicon-calendar"></span>
+					</button>
+				</li>
 			</ul><!-- nav -->
 			
 			<ul class='nav navbar-nav navbar-right'>
